@@ -1,0 +1,12 @@
+[
+    {"id": 1, "productName": "Kinkku", "productInShoppingList": false},
+    {"id": 2, "productName": "Suolaa", "productInShoppingList": false},
+    {"id": 3, "productName": "Voi", "productInShoppingList": false},
+    {"id": 4, "productName": "Margariini", "productInShoppingList": false},
+    {"id": 5, "productName": "Pepsi-Cola", "productInShoppingList": false},
+    {"id": 6, "productName": "Leipä", "productInShoppingList": false},
+    {"id": 7, "productName": "Viikunan lehtiä", "productInShoppingList": false},
+    {"id": 8, "productName": "wc-paperia", "productInShoppingList": false},
+    {"id": 9, "productName": "Teippiä", "productInShoppingList": false},
+    {"id": 10, "productName": "AAA Pattereita", "productInShoppingList": false}
+]

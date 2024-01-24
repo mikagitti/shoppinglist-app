@@ -1,0 +1,19 @@
+body {
+    background-color: rgba(83, 53, 4, 0.796);
+}
+
+ul {    
+    padding-inline-start: 0;    
+}
+
+ul li {
+    font-size: 20px;
+}
+
+.add-icon {
+    color: rgb(1, 124, 10);
+}
+
+.remove-icon {
+    color: rgb(233, 11, 11);
+}
