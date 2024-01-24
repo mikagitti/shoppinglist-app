@@ -2,7 +2,10 @@ import React, { useContext, useState } from "react";
 
 import ShoppingListContext from "../../Context/ShoppingList/ShoppingListContext";
 import ShoppingListItemComponent from "./ShoppingListItemComponent";
-import { Button, Typography } from "@mui/material";
+import { Button, Divider, Typography } from "@mui/material";
+
+
+const style = {listStyleType:'none', margin: '10px' }
 
 export default function ShoppinListComponent() {
 
@@ -21,29 +24,34 @@ export default function ShoppinListComponent() {
         </Typography>
             
 
-        <ul>
+        
         { shoppingList.map((x, index) => (            
             x.productChecked == false &&
-                <li key={index} style={ {listStyleType:'none' }}>
+                <div key={index} style={style}>
                     <ShoppingListItemComponent item={x} />
-                </li>
+                </div>
                 ))
         }
-        </ul>        
-        <Button onClick={() => setShowCheckedList(!showCheckedList)}>Show</Button>
         
-        {showCheckedList ? 
+        
+        
+        <Divider />
+        <Button sx={ {} } onClick={() => setShowCheckedList(!showCheckedList)}>Show in Cart</Button>
+        
+        {showCheckedList &&
+        <>
         <ul>
             {            
             shoppingList.map((x, index) => 
                 x.productChecked == true &&
-                    <li key={index} style={ {listStyleType:'none' }}>
+                    <li key={index} style={style}>
                         <ShoppingListItemComponent item={x} />
                     </li>            
                 )
             }
-        </ul> : 
-        null
+        </ul>
+        </> 
+        
         }
     
     </div>

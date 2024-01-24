@@ -44,8 +44,6 @@ export const ProductListProvider = ({children} : {children : ReactNode}) => {
     }
 
     const checkProductListProduct = (id: number) => {        
-        console.log(id);
-        
         setProductList((items) => 
                     items.map( (item) => item.id === id ? {...item, productInShoppingList: !item.productInShoppingList } : item) )        
     }

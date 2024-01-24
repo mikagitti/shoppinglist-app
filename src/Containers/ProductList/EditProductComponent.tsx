@@ -28,16 +28,15 @@ export default function EditProductComponent( {onClose, productId} : CurrentComp
     useEffect(() => {
         const product = productList.find(item => item.id === productId) ?? null;
         setProductName(product ? product.productName : "");
-        
     }, []);
 
     function saveProductChanges(id: number, name: string) {
         updateProductNameById(id, name);
         updateShoppingListProductName(id, name);
+        onClose();
     }
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      console.log(event.target.value)
       setProductName(event.target.value);
     };
 

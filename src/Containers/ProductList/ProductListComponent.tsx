@@ -7,16 +7,15 @@ import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 
 import ProductListContext from '../../Context/ProductList/ProductListContext';
 import ShoppingListContext from '../../Context/ShoppingList/ShoppingListContext';
+import ProductListItem from './ProductListItem';
+
+
+const style = {listStyleType:'none', margin: '10px' }
+
 
 export default function ProductListComponent () {
 
-    const {productList, checkProductListProduct} = useContext(ProductListContext)
-    const {ModifyShoppingList} = useContext(ShoppingListContext)
-
-    function handleCheckProduct(id: number, product: string) {
-        checkProductListProduct(id);
-        ModifyShoppingList(id, product);
-    }
+    const {productList} = useContext(ProductListContext)
 
     return (
     <>
@@ -27,24 +26,15 @@ export default function ProductListComponent () {
         <Typography variant="body1">
             Check product in shopping list
         </Typography>
-
-        <List>
+        
         {
-            productList.map( (x, index) => (
-                <ListItemButton  key={index} onClick={() => handleCheckProduct(x.id, x.productName)}>
-                    <ListItemIcon>                        
-                        {
-                            x.productInShoppingList == false ? 
-                            <AddCircleIcon className='add-icon' /> : //If product is not in shoppinglist, show plus icon.
-                            <RemoveCircleIcon className='remove-icon' /> //Otherwise show minus icon. 
-                        }
-                    </ListItemIcon>                                         
-                    {x.productName}
-                </ListItemButton >
-                
+            productList.map( (product, keyIndex) => (
+                <div key={keyIndex} style={style}>
+                    <ProductListItem product={product}/>
+                </div>
             ))
         }
-        </List>
+        
     </div>
     </>
     )

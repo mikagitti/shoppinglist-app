@@ -1,10 +1,22 @@
 
 import ProductListContext from "@/Context/ProductList/ProductListContext";
 import ShoppingListContext from "@/Context/ShoppingList/ShoppingListContext";
-import { Avatar, Box, Button, Grid, List, ListItem, ListItemButton, ListItemIcon, ListItemText, colors } from "@mui/material"
+import { Box, List, ListItem, ListItemIcon, ListItemText } from "@mui/material"
 import DeleteIcon from '@mui/icons-material/Delete';
+import ModeEditOutlineIcon from '@mui/icons-material/ModeEditOutline';
 import { useContext, useRef, useState } from "react"
 import EditProductComponent from "./EditProductComponent";
+
+
+const style = {
+    py: 0,
+    width: '100%',
+    borderRadius: 3,
+    border: '1px solid',
+    borderColor: 'divider',
+    backgroundColor: 'background.paper',
+    margin: '10px,'
+};
 
 export default function ProductEditingComponent() {
 
@@ -27,41 +39,33 @@ export default function ProductEditingComponent() {
 
     return (
     <>
-        {
-            
+        {            
             showEditProductComponent === true ? 
+ 
             <EditProductComponent onClose={() => setShowEditProductComponent(false)} productId = {chosenProductId} /> : 
+ 
+            productList.map( (x, index) => (
+                <div  style={style} key={index}>
+                <List>
+                    <ListItem >                
+                        {x.productName}                    
+                        
+                        <Box >
+                            <ListItemIcon onClick={() => editProduct(x.id)}>
+                                <ModeEditOutlineIcon/>
+                            </ListItemIcon>                                         
+                        </Box>
 
-            <List>
-            {
-                productList.map( (x, index) => (
-                    <ListItem key={index}>
-                        <Grid container alignItems="center">
-                            
-                            <Grid item xs={8}>
-                                <Box>
-                                    {x.productName}
-                                </Box>
-                            </Grid>
-                            
-                            <Grid item xs={3}>
-                                <Box>
-                                    <Button onClick={() => editProduct(x.id)}>Edit</Button>
-                                </Box>
-                            </Grid>
-                            <Grid item xs={1}>
-                                <Box>
-                                    <DeleteIcon sx={ {color: 'red'}} onClick={() => deleteFromProductList(x.id)}/>
-                                </Box>
-                            </Grid>
-                            
-                        </Grid>
+                        <Box>
+                            <ListItemIcon onClick={() => deleteFromProductList(x.id)}>
+                                <DeleteIcon/>
+                            </ListItemIcon>     
+                        </Box>
                     </ListItem>
-                    
-                ))
-            }
-            </List>
-        }
+                </List> 
+                </div>
+            ))
+         }
     </>
     )
 }
