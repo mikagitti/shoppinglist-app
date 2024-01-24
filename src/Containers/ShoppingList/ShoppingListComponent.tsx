@@ -26,7 +26,7 @@ export default function ShoppinListComponent() {
 
         
         { shoppingList.map((x, index) => (            
-            x.productChecked == false &&
+            x.productChecked === false &&
                 <div key={index} style={style}>
                     <ShoppingListItemComponent item={x} />
                 </div>
@@ -40,16 +40,16 @@ export default function ShoppinListComponent() {
         
         {showCheckedList &&
         <>
-        <ul>
+        
             {            
             shoppingList.map((x, index) => 
-                x.productChecked == true &&
-                    <li key={index} style={style}>
+                x.productChecked === true &&
+                    <div key={index} style={style}>
                         <ShoppingListItemComponent item={x} />
-                    </li>            
+                    </div>            
                 )
             }
-        </ul>
+        
         </> 
         
         }

@@ -1,17 +1,11 @@
 
 import React, { useContext } from 'react';
 
-import { List, ListItemIcon, ListItemButton, Typography  } from '@mui/material';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
-import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
-
+import { Typography } from '@mui/material';
 import ProductListContext from '../../Context/ProductList/ProductListContext';
-import ShoppingListContext from '../../Context/ShoppingList/ShoppingListContext';
 import ProductListItem from './ProductListItem';
 
-
 const style = {listStyleType:'none', margin: '10px' }
-
 
 export default function ProductListComponent () {
 
@@ -19,7 +13,7 @@ export default function ProductListComponent () {
 
     return (
     <>
-    <div style={ {padding: '10px'}}>
+    <div>
         <Typography variant="h5">
             Product List
         </Typography>

@@ -1,13 +1,5 @@
 body {
-    background-color: rgba(83, 53, 4, 0.796);
-}
-
-ul {    
-    padding-inline-start: 0;    
-}
-
-ul li {
-    font-size: 20px;
+    background-color: #2f272d /*#FFFFFF;*/
 }
 
 .add-icon {

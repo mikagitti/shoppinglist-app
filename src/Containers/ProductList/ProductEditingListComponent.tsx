@@ -1,7 +1,7 @@
 
 import ProductListContext from "@/Context/ProductList/ProductListContext";
 import ShoppingListContext from "@/Context/ShoppingList/ShoppingListContext";
-import { Box, List, ListItem, ListItemIcon, ListItemText } from "@mui/material"
+import { Box, List, ListItem, ListItemIcon, ListItemText, Typography } from "@mui/material"
 import DeleteIcon from '@mui/icons-material/Delete';
 import ModeEditOutlineIcon from '@mui/icons-material/ModeEditOutline';
 import { useContext, useRef, useState } from "react"
@@ -14,8 +14,7 @@ const style = {
     borderRadius: 3,
     border: '1px solid',
     borderColor: 'divider',
-    backgroundColor: 'background.paper',
-    margin: '10px,'
+    backgroundColor: 'background.paper'    
 };
 
 export default function ProductEditingComponent() {
@@ -37,34 +36,46 @@ export default function ProductEditingComponent() {
         deleteProductFromShoppingList(productId);
     }
 
+    const SetHeaderText = () => {
+        return (
+            <>
+                <Typography variant="h5">
+                    Edit products 
+                </Typography>
+
+                <Typography variant="body1">
+                    Or remove products
+                </Typography>
+                
+            </>
+        )
+    }
+
     return (
-    <>
-        {            
+    <>    
+        {   
+            showEditProductComponent ===false && <SetHeaderText />
+        }
+        {
             showEditProductComponent === true ? 
- 
-            <EditProductComponent onClose={() => setShowEditProductComponent(false)} productId = {chosenProductId} /> : 
- 
-            productList.map( (x, index) => (
-                <div  style={style} key={index}>
-                <List>
-                    <ListItem >                
-                        {x.productName}                    
+                <EditProductComponent onClose={() => setShowEditProductComponent(false)} productId = {chosenProductId} /> :
+                productList.map( (x, index) => (
+                    <List key={index} >                        
+                        <ListItem style={style}>
+                            <ListItemText primary={x.productName} />
                         
-                        <Box >
                             <ListItemIcon onClick={() => editProduct(x.id)}>
                                 <ModeEditOutlineIcon/>
                             </ListItemIcon>                                         
-                        </Box>
-
-                        <Box>
+                
                             <ListItemIcon onClick={() => deleteFromProductList(x.id)}>
                                 <DeleteIcon/>
-                            </ListItemIcon>     
-                        </Box>
-                    </ListItem>
-                </List> 
-                </div>
-            ))
+                            </ListItemIcon>                                 
+                        </ListItem>
+                    </List> 
+                ))
+                
+            
          }
     </>
     )

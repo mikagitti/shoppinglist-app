@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 
-import { List, ListItemIcon, ListItemButton, Typography, ListItem  } from '@mui/material';
+import { List, ListItemIcon, ListItemButton, Typography, ListItem, ListItemText  } from '@mui/material';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 
@@ -29,7 +29,7 @@ const getIcon = (product: ProductListType) => {
     )
 }
 
-export default function ProductListItem({ product} : ProductListItemType) {
+export default function ProductListItem({ product } : ProductListItemType) {
 
     const {checkProductListProduct} = useContext(ProductListContext)
     const {ModifyShoppingList} = useContext(ShoppingListContext)
@@ -41,13 +41,20 @@ export default function ProductListItem({ product} : ProductListItemType) {
 
     return (
             <List sx={style}>
-                <ListItem onClick={() => handleCheckProduct(product.id, product.productName)}>
+                <ListItem 
+                    onClick={() => handleCheckProduct(product.id, product.productName)}
+                    sx={ {
+                        ":hover": {
+                        backgroundColor: '#f0f0f0',
+                        cursor: 'pointer'
+                        }}}
+                >
                 <ListItemIcon>                        
                 {
                     getIcon(product)
                 }
                 </ListItemIcon>                                         
-                {product.productName}
+                <ListItemText primary={product.productName} />
             </ListItem>
         </List>    
     );
