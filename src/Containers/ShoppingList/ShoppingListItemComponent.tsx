@@ -30,7 +30,7 @@ export default function ShoppingListItemComponent({item} : ShoppingListItemProps
         <List sx={style}>
             <ListItem onClick={updateBothLists}>
                 <ListItemText>
-                    {item.productName}
+                    <ListItemText primary={item.productName} />
                 </ListItemText>
             </ListItem>
         </List>

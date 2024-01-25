@@ -58,9 +58,6 @@ export default function EditProductComponent( {onClose, productId} : CurrentComp
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={8} >
-            <Item>aa</Item>
-          </Grid>
       </Grid>
 
     )

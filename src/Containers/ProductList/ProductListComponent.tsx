@@ -1,11 +1,10 @@
 
 import React, { useContext } from 'react';
-
 import { Typography } from '@mui/material';
 import ProductListContext from '../../Context/ProductList/ProductListContext';
 import ProductListItem from './ProductListItem';
 
-const style = {listStyleType:'none', margin: '10px' }
+const style = {margin: '10px'}
 
 export default function ProductListComponent () {
 
@@ -14,6 +13,7 @@ export default function ProductListComponent () {
     return (
     <>
     <div>
+
         <Typography variant="h5">
             Product List
         </Typography>

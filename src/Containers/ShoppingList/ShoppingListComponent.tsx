@@ -5,7 +5,7 @@ import ShoppingListItemComponent from "./ShoppingListItemComponent";
 import { Button, Divider, Typography } from "@mui/material";
 
 
-const style = {listStyleType:'none', margin: '10px' }
+const style = {margin: '10px'}
 
 export default function ShoppinListComponent() {
 
