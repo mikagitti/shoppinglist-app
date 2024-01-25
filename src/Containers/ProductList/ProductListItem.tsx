@@ -45,14 +45,12 @@ export default function ProductListItem({ product } : ProductListItemType) {
                     onClick={() => handleCheckProduct(product.id, product.productName)}
                     sx={ {
                         ":hover": {
-                        backgroundColor: '#f0f0f0',
+                        backgroundColor: '#DEB887',
                         cursor: 'pointer'
                         }}}
                 >
-                <ListItemIcon>                        
-                {
-                    getIcon(product)
-                }
+                <ListItemIcon>
+                    { getIcon(product) }
                 </ListItemIcon>                                         
                 <ListItemText primary={product.productName} />
             </ListItem>
