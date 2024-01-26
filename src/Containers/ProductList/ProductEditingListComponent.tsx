@@ -1,10 +1,12 @@
 import ProductListContext, { ProductListType } from '@/Context/ProductList/ProductListContext';
 import ShoppingListContext from '@/Context/ShoppingList/ShoppingListContext';
-import { List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
+import { Button, Grid, List, ListItem, ListItemIcon, ListItemText, TextField } from '@mui/material';
 import React, { useContext, useState } from 'react';
 
 import DeleteIcon from '@mui/icons-material/Delete';
 import ModeEditOutlineIcon from '@mui/icons-material/ModeEditOutline';
+
+import SaveAsTwoToneIcon from '@mui/icons-material/SaveAsTwoTone';
 
 const style = {
     py: 0,
@@ -63,15 +65,36 @@ const ProductList = ({ productList, onDelete, onModify }: ProductListProps) => {
 
 type ProductDetailProps = {
     product: ProductListType; 
-    onSave: (id: number, name: string, event: React.MouseEvent<HTMLButtonElement>) => void;
+    onSave: (id: number, name: string) => void;
 }
 
 const ProductDetail = ({ product, onSave } : ProductDetailProps) => {
-  return (
-    <div>
-      <div>{product.productName}</div>
-      <button onClick={(event) => onSave(product.id, product.productName, event)}>Save</button>
-    </div>
+  
+    const [newProductName, setNewProductName] = useState<string>(product.productName);
+
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setNewProductName(event.target.value);
+      };
+  
+    return (
+    <>
+    <Grid container spacing={2} alignItems="center">
+      
+          <Grid item xs>
+            <TextField fullWidth value={newProductName} variant="outlined" onChange={handleChange}  />
+          </Grid>
+      
+          <Grid item>            
+            <Button 
+              variant="contained" 
+              color="primary"
+              onClick={() => onSave(product.id, newProductName)}>
+              <SaveAsTwoToneIcon />
+            </Button>
+          </Grid>
+          
+        </Grid>
+    </>
   );
 };
 
@@ -97,21 +120,22 @@ export default function ProductEditingComponent() {
         setShowEditProductComponent(true);
     };
 
-    const handleSave = (id: number, name: string, event: React.MouseEvent<HTMLButtonElement>) => {
+    const handleSave = (id: number, name: string) => {
+        console.log('dd');
         updateProductNameById(id, name);
         updateShoppingListProductName(id, name);
         setShowEditProductComponent(false);
     };
 
-  return (
-    <div>
-      {showEditProductComponent === false ? (
-        <ProductList productList={productList} onDelete={handleDelete} onModify={handleModify} />
-      ) : (
-        <ProductDetail product={selectedproduct} onSave={handleSave} />
-      )}
-    </div>
-  );
+    return (
+        <div>
+        {showEditProductComponent === false ? (
+            <ProductList productList={productList} onDelete={handleDelete} onModify={handleModify} />
+        ) : (
+            <ProductDetail product={selectedproduct} onSave={handleSave} />
+        )}
+        </div>
+    );
 };
 
 
