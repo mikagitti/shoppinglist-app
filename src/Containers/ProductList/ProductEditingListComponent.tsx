@@ -1,11 +1,10 @@
+import ProductListContext, { ProductListType } from '@/Context/ProductList/ProductListContext';
+import ShoppingListContext from '@/Context/ShoppingList/ShoppingListContext';
+import { List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
+import React, { useContext, useState } from 'react';
 
-import ProductListContext from "@/Context/ProductList/ProductListContext";
-import ShoppingListContext from "@/Context/ShoppingList/ShoppingListContext";
-import { Box, List, ListItem, ListItemIcon, ListItemText, Typography, useMediaQuery, useTheme } from "@mui/material"
 import DeleteIcon from '@mui/icons-material/Delete';
 import ModeEditOutlineIcon from '@mui/icons-material/ModeEditOutline';
-import { useContext, useRef, useState } from "react"
-import EditProductComponent from "./EditProductComponent";
 
 const style = {
     py: 0,
@@ -17,62 +16,104 @@ const style = {
     marginBottom: '14px'
 };
 
+const iconStyle = {
+    fontSize: '40px',
+    marginRight: '40px',
+}
+
+
+
+type ProductListProps= {
+    productList: ProductListType[]
+    onDelete: (id: number) => void; 
+    onModify: (id: number, name: string) => void;
+}
+
+const ProductList = ({ productList, onDelete, onModify }: ProductListProps) => {
+  return (
+    <div>      
+        {productList.map((product, index) => (
+        <List key={index} sx={style} >
+            <ListItem
+            sx={ {
+                ":hover": {
+                backgroundColor: '#DEB887',
+                cursor: 'pointer',                    
+                }}}>
+            
+                <ListItemText primary={product.productName} />
+            
+                <ListItemIcon onClick={() => onModify(product.id, product.productName)}>
+                    <ModeEditOutlineIcon sx={iconStyle}/>
+                </ListItemIcon>                                         
+    
+                <ListItemIcon onClick={() => onDelete(product.id)}>
+                    <DeleteIcon sx={iconStyle}/>
+                </ListItemIcon>                                 
+
+            </ListItem>
+        </List> 
+        ))}
+    </div>
+  );
+};
+
+
+
+
+type ProductDetailProps = {
+    product: ProductListType; 
+    onSave: (id: number, name: string, event: React.MouseEvent<HTMLButtonElement>) => void;
+}
+
+const ProductDetail = ({ product, onSave } : ProductDetailProps) => {
+  return (
+    <div>
+      <div>{product.productName}</div>
+      <button onClick={(event) => onSave(product.id, product.productName, event)}>Save</button>
+    </div>
+  );
+};
+
+
+
 
 export default function ProductEditingComponent() {
 
-    const {productList, deleteProductFromProductList} = useContext(ProductListContext);
-    const {deleteProductFromShoppingList} = useContext(ShoppingListContext);
+    const {productList, deleteProductFromProductList, updateProductNameById} = useContext(ProductListContext);
+    const {deleteProductFromShoppingList, updateShoppingListProductName} = useContext(ShoppingListContext);
+
     const [showEditProductComponent, setShowEditProductComponent] = useState<boolean>(false);
-    const [chosenProductId, setChosenProductId] = useState<number>(0);
+    const [selectedproduct, setSelectedproduct] = useState<ProductListType>({id: 0, productName: '', productInShoppingList: false});    
 
-    const theme = useTheme();
-    const matches = useMediaQuery(theme.breakpoints.down('sm'));
-
-    function editProduct(productId: number): void {        
-        setChosenProductId(productId);        
-        setShowEditProductComponent(true);
-    }
-
-    function deleteFromProductList(productId: number): void {
+    const handleDelete = (productId: number) => {
         deleteProductFromProductList(productId);
         deleteProductFromShoppingList(productId);
-    }
+    };
 
-    const iconStyle = {
-        fontSize: matches ? '30px' : '40px',
-        marginRight: matches ? '0' : '40px',
-    }
+    const handleModify = (productId: number, productName: string) => {
+        const product: ProductListType = {id: productId, productName: productName, productInShoppingList: false}
+        setSelectedproduct(product);
+        setShowEditProductComponent(true);
+    };
 
-    return (
-    <>  <div style={{} }>
-        {
-            showEditProductComponent === true ? 
-            <EditProductComponent onClose={() => setShowEditProductComponent(false)} productId = {chosenProductId} /> :
-            productList.map( (product, index) => (                
-            <List key={index} sx={style} >
-                <ListItem
-                sx={ {
-                    ":hover": {
-                    backgroundColor: '#DEB887',
-                    cursor: 'pointer',                    
-                    }}}>
-                
-                    <ListItemText primary={product.productName} />
-                
-                    <ListItemIcon onClick={() => editProduct(product.id)}>
-                        <ModeEditOutlineIcon sx={iconStyle}/>
-                    </ListItemIcon>                                         
-        
-                    <ListItemIcon onClick={() => deleteFromProductList(product.id)}>
-                        <DeleteIcon sx={iconStyle}/>
-                    </ListItemIcon>                                 
+    const handleSave = (id: number, name: string, event: React.MouseEvent<HTMLButtonElement>) => {
+        updateProductNameById(id, name);
+        updateShoppingListProductName(id, name);
+        setShowEditProductComponent(false);
+    };
 
-                </ListItem>
-            </List> 
-                
-            ))
-         }
-         </div>
-    </>
-    )
-}
+  return (
+    <div>
+      {showEditProductComponent === false ? (
+        <ProductList productList={productList} onDelete={handleDelete} onModify={handleModify} />
+      ) : (
+        <ProductDetail product={selectedproduct} onSave={handleSave} />
+      )}
+    </div>
+  );
+};
+
+
+
+
