@@ -31,11 +31,6 @@ export const ProductListProvider = ({children} : {children : ReactNode}) => {
     const [productList, setProductList] = useState<ProductListType[]>(readyProductList);
 
     const productIdInUseRef = useRef<number>(100);
-    
-    /*
-    const addToProductList = (product: string) => {
-        setProductList([...productList, {productName: product, productInShoppingList: false}]);
-    };    */
 
     const updateProductNameById = (id: number, name: string) => {
         setProductList(productList.map(item => 
