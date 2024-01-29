@@ -1,6 +1,7 @@
-import React, { createContext, useState, ReactNode, useRef } from 'react';
+import React, { createContext, useState, ReactNode, useRef, useEffect } from 'react';
 
-import readyProductList from './ProductListJSON.json';
+import productListJsonFile from './ProductListJSON.json';
+import { GetProducts } from '@/Database/dbConnection';
 
 export type ProductListType = {
     id: number;
@@ -13,6 +14,13 @@ interface IProductListContext {
     updateProductNameById: (id: number, name: string) => void;
     addNewProduct: (name: string) => void;
     deleteProductFromProductList: (id: number) => void;
+}
+
+
+const fetchProductFromDB = async ():Promise<ProductListType[]> => {
+    const result = await GetProducts();
+    const setProductsToList:ProductListType[] = result.map(x => ( {id: x.id, productName: x.name, productInShoppingList: Boolean(x.shoppinglist)}))
+    return setProductsToList;
 }
 
 const defaultProductListState: IProductListContext = {
@@ -28,14 +36,23 @@ const ProductListContext = createContext<IProductListContext>(defaultProductList
 
 //PROVIDER
 export const ProductListProvider = ({children} : {children : ReactNode}) => {
-    const [productList, setProductList] = useState<ProductListType[]>(readyProductList);
+
+    const [productList, setProductList] = useState<ProductListType[]>([]);
 
     const productIdInUseRef = useRef<number>(100);
-    
-    /*
-    const addToProductList = (product: string) => {
-        setProductList([...productList, {productName: product, productInShoppingList: false}]);
-    };    */
+
+    //One time database fetch for product list.
+    useEffect(() => {        
+        async function runFetchProductsFromDB() {
+            setProductList(await fetchProductFromDB());
+        }
+        runFetchProductsFromDB();
+
+        if (productList.length <= 0) {
+            setProductList(productListJsonFile);
+        }
+
+    },[])
 
     const updateProductNameById = (id: number, name: string) => {
         setProductList(productList.map(item => 
@@ -44,8 +61,6 @@ export const ProductListProvider = ({children} : {children : ReactNode}) => {
     }
 
     const checkProductListProduct = (id: number) => {        
-        console.log(id);
-        
         setProductList((items) => 
                     items.map( (item) => item.id === id ? {...item, productInShoppingList: !item.productInShoppingList } : item) )        
     }
