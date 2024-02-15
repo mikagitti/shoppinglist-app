@@ -18,7 +18,7 @@ export default function ProductListComponent () {
             Product List
         </Typography>
         <Typography variant="body1">
-            Check product in shopping list
+            Add/Remove products in shopping list.
         </Typography>
         
         {

@@ -12,14 +12,14 @@ interface IProductListContext {
     productList: ProductListType[];
     checkProductListProduct: (id: number) => void;
     updateProductNameById: (id: number, name: string) => void;
-    addNewProduct: (name: string) => void;
+    addNewProduct: (id: number, name: string) => void;
     deleteProductFromProductList: (id: number) => void;
 }
 
 
 const fetchProductFromDB = async ():Promise<ProductListType[]> => {
     const result = await GetProducts();
-    const setProductsToList:ProductListType[] = result.map(x => ( {id: x.id, productName: x.name, productInShoppingList: Boolean(x.shoppinglist)}))
+    const setProductsToList:ProductListType[] = result.map(x => ( {id: x.id, productName: x.productName, productInShoppingList: Boolean(x.shoppingList)}))
     return setProductsToList;
 }
 
@@ -27,7 +27,7 @@ const defaultProductListState: IProductListContext = {
     productList: [],    
     checkProductListProduct: (id: number) => {},
     updateProductNameById: (id: number, name: string) => {},
-    addNewProduct: (name: string) => {},
+    addNewProduct: (id: number, name: string) => {},
     deleteProductFromProductList: (id: number) => {},
 }
 
@@ -38,8 +38,6 @@ const ProductListContext = createContext<IProductListContext>(defaultProductList
 export const ProductListProvider = ({children} : {children : ReactNode}) => {
 
     const [productList, setProductList] = useState<ProductListType[]>([]);
-
-    const productIdInUseRef = useRef<number>(100);
 
     //One time database fetch for product list.
     useEffect(() => {        
@@ -65,9 +63,8 @@ export const ProductListProvider = ({children} : {children : ReactNode}) => {
                     items.map( (item) => item.id === id ? {...item, productInShoppingList: !item.productInShoppingList } : item) )        
     }
 
-    const addNewProduct = (name: string) => {
-        productIdInUseRef.current += 1;
-        setProductList([...productList, {id: productIdInUseRef.current, productName: name, productInShoppingList: false}]);        
+    const addNewProduct = (productId: number, productName: string) => {        
+        setProductList([...productList, {id: productId, productName: productName, productInShoppingList: false}]);        
     }
 
     const deleteProductFromProductList = (id: number) => {
