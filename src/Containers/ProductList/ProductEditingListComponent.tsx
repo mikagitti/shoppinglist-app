@@ -1,12 +1,15 @@
 import ProductListContext, { ProductListType } from '@/Context/ProductList/ProductListContext';
 import ShoppingListContext from '@/Context/ShoppingList/ShoppingListContext';
-import { Button, Grid, List, ListItem, ListItemIcon, ListItemText, TextField } from '@mui/material';
+import { Button, Grid, List, ListItem, ListItemIcon, ListItemText, Modal, TextField } from '@mui/material';
 import React, { useContext, useState } from 'react';
 
 import DeleteIcon from '@mui/icons-material/Delete';
 import ModeEditOutlineIcon from '@mui/icons-material/ModeEditOutline';
-
 import SaveAsTwoToneIcon from '@mui/icons-material/SaveAsTwoTone';
+
+import { deleteProductFromDB } from "../../Database/dbConnection";
+
+import { AddNewModal } from './AddNewProductModal';
 
 const style = {
     py: 0,
@@ -20,18 +23,20 @@ const style = {
 
 const iconStyle = {
     fontSize: '40px',
-    marginRight: '40px',
+    marginRight: '40px'   
 }
 
 
 
-type ProductListProps= {
-    productList: ProductListType[]
+type ProductListProps = {
+    productList: ProductListType[];
     onDelete: (id: number) => void; 
     onModify: (id: number, name: string) => void;
+    onDeleteDB: (id: number) => void;
 }
 
-const ProductList = ({ productList, onDelete, onModify }: ProductListProps) => {
+
+const ProductList = ({ productList, onDelete, onModify, onDeleteDB }: ProductListProps) => {
   return (
     <div>      
         {productList.map((product, index) => (
@@ -40,7 +45,8 @@ const ProductList = ({ productList, onDelete, onModify }: ProductListProps) => {
             sx={ {
                 ":hover": {
                 backgroundColor: '#DEB887',
-                cursor: 'pointer',                    
+                cursor: 'pointer', 
+                borderRadius: 3,                   
                 }}}>
             
                 <ListItemText primary={product.productName} />
@@ -51,7 +57,7 @@ const ProductList = ({ productList, onDelete, onModify }: ProductListProps) => {
     
                 <ListItemIcon onClick={() => onDelete(product.id)}>
                     <DeleteIcon sx={iconStyle}/>
-                </ListItemIcon>                                 
+                </ListItemIcon>
 
             </ListItem>
         </List> 
@@ -98,9 +104,6 @@ const ProductDetail = ({ product, onSave } : ProductDetailProps) => {
   );
 };
 
-
-
-
 export default function ProductEditingComponent() {
 
     const {productList, deleteProductFromProductList, updateProductNameById} = useContext(ProductListContext);
@@ -112,6 +115,7 @@ export default function ProductEditingComponent() {
     const handleDelete = (productId: number) => {
         deleteProductFromProductList(productId);
         deleteProductFromShoppingList(productId);
+        deleteProductFromDB(productId);
     };
 
     const handleModify = (productId: number, productName: string) => {
@@ -121,19 +125,34 @@ export default function ProductEditingComponent() {
     };
 
     const handleSave = (id: number, name: string) => {
-        console.log('dd');
         updateProductNameById(id, name);
         updateShoppingListProductName(id, name);
         setShowEditProductComponent(false);
     };
 
+    const [isAddNewProductModalOpen, setIsAddNewProductModalOpen] = useState<boolean>(false);
+
+    const handleDatabadeDelete = (id: number) => {
+        deleteProductFromDB(id);
+      };
+
     return (
         <div>
-        {showEditProductComponent === false ? (
-            <ProductList productList={productList} onDelete={handleDelete} onModify={handleModify} />
-        ) : (
-            <ProductDetail product={selectedproduct} onSave={handleSave} />
-        )}
+            {showEditProductComponent === false ? (
+            <>
+                <button onClick={() => setIsAddNewProductModalOpen(true)}>Add New Product</button>                
+
+                <ProductList productList={productList} onDelete={handleDelete} onModify={handleModify} onDeleteDB={handleDatabadeDelete}/>
+            </>
+            ) : (
+                <ProductDetail product={selectedproduct} onSave={handleSave} />
+            )}
+
+            <AddNewModal isOpen={isAddNewProductModalOpen} onClose={() => setIsAddNewProductModalOpen(false)}>
+                    <p>This is a modal dialog!</p>
+                </AddNewModal>
+
+
         </div>
     );
 };
