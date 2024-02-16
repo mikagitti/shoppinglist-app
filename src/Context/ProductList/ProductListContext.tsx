@@ -1,23 +1,30 @@
 import React, { createContext, useState, ReactNode, useRef, useEffect } from 'react';
 
 import productListJsonFile from './ProductListJSON.json';
-import { GetProducts } from '@/Database/dbConnection';
+import { DbHealthCheck, GetProducts } from '@/Database/dbConnection';
 
 export type ProductListType = {
-    id: number;
+    id: string;
     productName: string;
     productInShoppingList: boolean; 
 }
 interface IProductListContext {    
     productList: ProductListType[];
-    checkProductListProduct: (id: number) => void;
-    updateProductNameById: (id: number, name: string) => void;
-    addNewProduct: (id: number, name: string) => void;
-    deleteProductFromProductList: (id: number) => void;
+    checkProductListProduct: (id: string) => void;
+    updateProductNameById: (id: string, name: string) => void;
+    addNewProduct: (id: string, name: string) => void;
+    deleteProductFromProductList: (id: string) => void;
 }
 
 
 const fetchProductFromDB = async ():Promise<ProductListType[]> => {
+
+    const isDbOn:boolean = await DbHealthCheck();
+    if(isDbOn)
+        console.log('ITS ON!')
+    else
+        console.log('It is Offline??')
+
     const result = await GetProducts();
     const setProductsToList:ProductListType[] = result.map(x => ( {id: x.id, productName: x.productName, productInShoppingList: Boolean(x.shoppingList)}))
     return setProductsToList;
@@ -25,10 +32,10 @@ const fetchProductFromDB = async ():Promise<ProductListType[]> => {
 
 const defaultProductListState: IProductListContext = {
     productList: [],    
-    checkProductListProduct: (id: number) => {},
-    updateProductNameById: (id: number, name: string) => {},
-    addNewProduct: (id: number, name: string) => {},
-    deleteProductFromProductList: (id: number) => {},
+    checkProductListProduct: (id: string) => {},
+    updateProductNameById: (id: string, name: string) => {},
+    addNewProduct: (id: string, name: string) => {},
+    deleteProductFromProductList: (id: string) => {},
 }
 
 //CONTEXT
@@ -50,29 +57,34 @@ export const ProductListProvider = ({children} : {children : ReactNode}) => {
             setProductList(productListJsonFile);
         }
 
-    },[])
+    },[productList.length])
 
-    const updateProductNameById = (id: number, name: string) => {
+    const updateProductNameById = (id: string, name: string) => {
         setProductList(productList.map(item => 
             item.id === id ? { ...item, productName: name } : item
           ));
     }
 
-    const checkProductListProduct = (id: number) => {        
+    const checkProductListProduct = (id: string) => {        
         setProductList((items) => 
                     items.map( (item) => item.id === id ? {...item, productInShoppingList: !item.productInShoppingList } : item) )        
     }
 
-    const addNewProduct = (productId: number, productName: string) => {        
+    const addNewProduct = (productId: string, productName: string) => {        
         setProductList([...productList, {id: productId, productName: productName, productInShoppingList: false}]);        
     }
 
-    const deleteProductFromProductList = (id: number) => {
+    const deleteProductFromProductList = (id: string) => {
         setProductList(productList.filter(item => item.id !== id));
     }
 
     return (
-        <ProductListContext.Provider value={{ productList, checkProductListProduct, updateProductNameById, addNewProduct, deleteProductFromProductList }}>
+        <ProductListContext.Provider value={{ 
+            productList, 
+            checkProductListProduct, 
+            updateProductNameById, 
+            addNewProduct, 
+            deleteProductFromProductList }}>
         {children}
         </ProductListContext.Provider>
     );

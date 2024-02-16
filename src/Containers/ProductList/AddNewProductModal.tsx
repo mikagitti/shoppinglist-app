@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Button, TextField } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import { CSSProperties } from '@mui/material/styles/createMixins';
 import { ProductType, AddNewProduct } from '@/Database/dbConnection';
-
+import ProductListContext from '@/Context/ProductList/ProductListContext';
+import { v4 as uuidv4 } from 'uuid';
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-  children: React.ReactNode;
 }
 
 const modalStyle : CSSProperties = {
@@ -29,14 +29,22 @@ const backgroundStyle = {
     borderRadius: '5px',
 }
 
-
-export const AddNewModal = ({ isOpen, onClose, children } : ModalProps) => {
+export const AddNewModal = ({ isOpen, onClose } : ModalProps) => {
   
+  const { addNewProduct } = useContext(ProductListContext);
   const [productName, setProductName] = useState<string>('');
 
-  const saveNewProduct = () => {
-    const product : ProductType = {id:0, productName:productName, shoppingList:false}
-    AddNewProduct(product);    
+  const saveNewProduct = () => {    
+    const emptyShoppinglistChecked:boolean = false;
+
+    if(productName != '') {
+      const product : ProductType = { id: uuidv4(), 
+                                      productName: productName, 
+                                      shoppingList: emptyShoppinglistChecked
+                                    }
+      AddNewProduct(product);
+      addNewProduct(product.id, product.productName);      
+    }    
     onClose();
   }
   
@@ -44,16 +52,21 @@ export const AddNewModal = ({ isOpen, onClose, children } : ModalProps) => {
   if (!isOpen) return null;
 
   return (
-    <div style={( modalStyle)}>      
+  <>
+    <div style={modalStyle}>      
       <div style={backgroundStyle}>
+        
         <h1>Add new product and press</h1>
         <Stack spacing={2}>
             <TextField id="product-name" variant="standard" value={productName} onChange={(e) => setProductName(e.target.value)} label="Product name"/>
             <Button variant="outlined" onClick={() => saveNewProduct()}>Save</Button>
         </Stack>
+        
       </div>
     </div>
+  </>  
   );
 };
+
 
 
