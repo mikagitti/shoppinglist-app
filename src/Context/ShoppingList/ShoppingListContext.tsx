@@ -1,34 +1,35 @@
-import React, { createContext, useState, ReactNode } from 'react';
+import React, { createContext, useState, ReactNode, useContext } from 'react';
+import { ProductListType } from '../ProductList/ProductListContext';
 
 export type ShoppingListType = {
-    productId: number;
+    productId: string;
     productName: string;
     productChecked: boolean;
 }
 
 type ShoppingListContextType = {
-  shoppingList: ShoppingListType[];  
+  shoppingList: ShoppingListType[];    
   clearShoppingList: () => void;
   checkShoppingListProduct: (product: string) => void;
-  ModifyShoppingList: (id: number, productName: string) => void;
-  updateShoppingListProductName: (id: number, productName: string) => void;
-  deleteProductFromShoppingList: (id: number) => void;
+  ModifyShoppingList: (id: string, productName: string) => void;
+  updateShoppingListProductName: (id: string, productName: string) => void;
+  deleteProductFromShoppingList: (id: string) => void;
 }
 
 const defaultShoppingListState: ShoppingListContextType = {
-    shoppingList: [],
+    shoppingList: [],    
     clearShoppingList: () => {},
     checkShoppingListProduct: (product: string) => {},
-    ModifyShoppingList: (id: number, productName: string) => {},
-    updateShoppingListProductName: (id: number, productName: string) => {},
-    deleteProductFromShoppingList: (id: number) => {},
+    ModifyShoppingList: (id: string, productName: string) => {},
+    updateShoppingListProductName: (id: string, productName: string) => {},
+    deleteProductFromShoppingList: (id: string) => {},
 };
 
 
 const ShoppingListContext = createContext<ShoppingListContextType>(defaultShoppingListState);
 
 export const ShoppinglistProvider = ({ children }: { children: ReactNode }) => {
-    
+
     const [shoppingList, setShoppingList] = useState<ShoppingListType[]>(readyShoppingList);    
 
     const clearShoppingList = () => {        
@@ -40,7 +41,7 @@ export const ShoppinglistProvider = ({ children }: { children: ReactNode }) => {
                         items.map( (item) => item.productName === removableProduct ? {...item, productChecked: !item.productChecked } : item) )        
     }
 
-    const ModifyShoppingList = (productId: number, productName: string) => {
+    const ModifyShoppingList = (productId: string, productName: string) => {
         
         //If product does not exist in shoppinglist then add it to shoppinglist.
         if (doesProductExist(productId) == false) {
@@ -51,21 +52,21 @@ export const ShoppinglistProvider = ({ children }: { children: ReactNode }) => {
         }
     }
 
-    const doesProductExist = (id: number) => {
+    const doesProductExist = (id: string) => {
         return shoppingList.some(item => item.productId === id);
     };
 
-    const updateShoppingListProductName = (id: number, name: string) => {
+    const updateShoppingListProductName = (id: string, name: string) => {
         setShoppingList(shoppingList.map(item => item.productId === id ? { ...item, productName: name } : item) );                            
     }
 
-    const deleteProductFromShoppingList = (id: number) => {
+    const deleteProductFromShoppingList = (id: string) => {
         setShoppingList(shoppingList.filter(product => product.productId !== id));
     }
 
     return (
         <ShoppingListContext.Provider value={{ 
-            shoppingList, 
+            shoppingList,            
             clearShoppingList, 
             checkShoppingListProduct, 
             ModifyShoppingList, 
