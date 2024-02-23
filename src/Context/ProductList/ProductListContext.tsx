@@ -19,12 +19,14 @@ interface IProductListContext {
 
 const fetchProductFromDB = async ():Promise<ProductListType[]> => {
 
+    /*
     const isDbOn:boolean = await DbHealthCheck();
     if(isDbOn)
         console.log('ITS ON!')
     else
         console.log('It is Offline??')
-
+    */
+   
     const result = await GetProducts();
     const setProductsToList:ProductListType[] = result.map(x => ( {id: x.id, productName: x.productName, productInShoppingList: Boolean(x.shoppingList)}))
     return setProductsToList;
