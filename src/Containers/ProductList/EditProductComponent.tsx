@@ -9,7 +9,7 @@ import { Grid, Card, CardContent, Typography, Button, TextField, Box, styled, Pa
 
 type CurrentComponentProps = {
     onClose: () => void;
-    productId: number;
+    productId: string;
   }
 
   const Item = styled(Paper)(({ theme }) => ({
@@ -32,7 +32,7 @@ export default function EditProductComponent( {onClose, productId} : CurrentComp
         setProductName(product ? product.productName : "");
     }, []);
 
-    function saveProductChanges(id: number, name: string) {
+    function saveProductChanges(id: string, name: string) {
         updateProductNameById(id, name);
         updateShoppingListProductName(id, name);
         onClose();

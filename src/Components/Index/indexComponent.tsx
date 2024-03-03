@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 
-import MainContent from "@/Components/Home/HomeComponent";
+import Home from "@/Components/Home/HomeComponent";
 import NavBar from "@/Containers/Header/header";
 import ProductListComponent from "@/Containers/ProductList/ProductListComponent";
 import ShoppinListComponent from "@/Containers/ShoppingList/ShoppingListComponent";
@@ -31,7 +31,7 @@ export default function IndexComponent() {
             {
                 activeHeader.id === 1 && 
                     <div style={{ marginTop: 8}}>
-                        <MainContent />
+                        <Home />
                     </div>
             }
             

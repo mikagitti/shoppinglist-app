@@ -32,9 +32,9 @@ const iconStyle = {
 
 type ProductListProps = {
     productList: ProductListType[];
-    onDelete: (id: number) => void; 
-    onModify: (id: number, name: string) => void;
-    onDeleteDB: (id: number) => void;
+    onDelete: (id: string) => void; 
+    onModify: (id: string, name: string) => void;
+    onDeleteDB: (id: string) => void;
 }
 
 
@@ -80,24 +80,25 @@ export default function ProductEditingComponent() {
     const {deleteProductFromShoppingList, updateShoppingListProductName} = useContext(ShoppingListContext);
 
     const [showEditProductComponent, setShowEditProductComponent] = useState<boolean>(false);
-    const [selectedproduct, setSelectedproduct] = useState<ProductListType>({id: 0, productName: '', productInShoppingList: false});    
+    const [selectedproduct, setSelectedproduct] = useState<ProductListType>({id: '0', productName: '', productInShoppingList: false});    
 
-    const testProduct: ProductListType = {productName: 'testiPP', productInShoppingList: false, id: 10110};
+    const testProduct: ProductListType = {productName: 'testiPP', productInShoppingList: false, id: '10110'};
 
-    const handleDelete = (productId: number) => {
+    const handleDelete = (productId: string) => {
         deleteProductFromProductList(productId);
         deleteProductFromShoppingList(productId);
         deleteProductFromDB(productId);
     };
 
-    const handleModify = (productId: number, productName: string) => {
+
+    const handleModify = (productId: string, productName: string) => {
         console.log(productId + ' ' +  productName)
         const product: ProductListType = {id: productId, productName: productName, productInShoppingList: false}
         setSelectedproduct(product);
         setModalOpen(true);
     };
 
-    const handleSave = (id: number, name: string) => {
+    const handleSave = (id: string, name: string) => {
         updateProductNameById(id, name);
         updateShoppingListProductName(id, name);
         setShowEditProductComponent(false);
@@ -106,7 +107,7 @@ export default function ProductEditingComponent() {
     const [isAddNewProductModalOpen, setIsAddNewProductModalOpen] = useState<boolean>(false);
     const [isModalOpen, setModalOpen] = useState<boolean>(false);
 
-    const handleDatabadeDelete = (id: number) => {
+    const handleDatabadeDelete = (id: string) => {
         deleteProductFromDB(id);
       };
 
