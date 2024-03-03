@@ -40,7 +40,7 @@ export type NewProductToShoppingListType = {
 };
 
 /*****************************/
-/***** GET ALL PRODUCTs ******/
+/***** GET all products ******/
 /*****************************/
 export const GetAllProducts = async (): Promise<ProductType[]> => {
      console.log(" ** GetAllProducts **");
@@ -55,7 +55,11 @@ export const GetAllProducts = async (): Promise<ProductType[]> => {
           .get<[]>(apiClause)
           .then((response) => {
                console.log(response.data);
-               products = response.data;
+               const responseData: ProductType[] = response.data;
+               products = responseData.map((x) => ({
+                    ...x,
+                    description: x.description || "",
+               }));
           })
           .catch((error) => {
                console.error("There was an error!", error);
@@ -76,9 +80,60 @@ export const GetAllProducts = async (): Promise<ProductType[]> => {
      return products;
 };
 
-/****************************************/
-/***** GET SHOPPINGLISTS by USERID ******/
-/****************************************/
+/*****************************/
+/***** Add new product  ******/
+/*****************************/
+export const AddNewProduct = async (productName: string) => {
+     console.log({ productName });
+
+     try {
+          const response = await axios.post(
+               productsWeb + "/" + productsApi,
+               { productName: productName, description: "" },
+               {
+                    headers: {
+                         "Content-Type": "application/json",
+                    },
+               }
+          );
+
+          console.log("Data insert successfully:", response.data);
+          console.log("Status:", response.status);
+     } catch (error) {
+          console.error("Error updating data:", error);
+     }
+};
+
+/****************************/
+/***** Delete product  ******/
+/****************************/
+export const DeleteProduct = async (productid: number) => {
+     console.log("Delete product");
+     console.log({ productid });
+
+     try {
+          const response = await axios.delete(
+               productsWeb + "/" + productsApi + `/${productid}`,
+               {
+                    headers: {
+                         "Content-Type": "application/json",
+                    },
+               }
+          );
+
+          console.log(
+               "Product removed successfully from shoppinglist:",
+               response.data
+          );
+          console.log("Status:", response.status);
+     } catch (error) {
+          console.error("Error removing product from shoppinglist:", error);
+     }
+};
+
+/*****************************************/
+/***** GET shopping lists by userID ******/
+/*****************************************/
 export const GetShoppingListsByUserId = async (
      id: number
 ): Promise<ShoppingListsType[]> => {
@@ -110,9 +165,9 @@ export const GetShoppingListsByUserId = async (
      return shoppingLists;
 };
 
-/*******************************************************/
-/***** GET SHOPPINGLISTPRODUCTS by SHOPPINGLISTID ******/
-/*******************************************************/
+/*********************************************************/
+/***** GET shopping list products by shoppinglistID ******/
+/*********************************************************/
 export const GetShoppingListProductsByShoppingListId = async (
      id: number
 ): Promise<ShoppingListProductsType[]> => {
@@ -232,6 +287,7 @@ export const AddNewProductToShoppingList = async (
 /***** Remove product from shoppinglist *************/
 /****************************************************/
 export const RemoveProductFromShoppingList = async (productid: number) => {
+     console.log("Remove product from shoppinglist");
      console.log({ productid });
 
      try {
