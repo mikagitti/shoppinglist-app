@@ -16,9 +16,15 @@ import {
     AddNewProductToShoppingList,
     RemoveProductFromShoppingList,
     AddNewProduct,
-    DeleteProduct
+    DeleteProduct,    
+    GetAllUsers
 } from "@/Database/dbConnectionV2";
-import { ProductType, ShoppingListsType, ShoppingListProductsType } from "@/Database/dbConnectionV2";
+import { 
+    UserType, 
+    ProductType, 
+    ShoppingListsType, 
+    ShoppingListProductsType 
+} from "@/Database/dbConnectionV2";
 import { 
     Table, 
     TableBody, 
@@ -29,6 +35,7 @@ import {
     Paper 
 } from '@mui/material';
 import TableButton from "./TableButton";
+import ShoppingListButton from "./ShoppingListButton";
 
 const labelStyle =  {
     fontSize: '25px',
@@ -48,11 +55,14 @@ export default function MainSL() {
     
     let token = useRef('');
 
+    const [users, setUsers] = useState<UserType[]>([]);
+    const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
+
     const [productList, setProductList] = useState<ProductType[]>([]);
     const [selectedProduct, setSelectedProduct] = useState<ProductType | null>(null);
 
     const [shoppingLists, setShoppingLists] = useState<ShoppingListsType[]>([]);
-    const [selectedShoppingList, setSelectedShoppingList] = useState<ShoppingListsType | null>();
+    const [selectedShoppingList, setSelectedShoppingList] = useState<ShoppingListsType | null>(null);
 
     const [shoppingListProducts, setShoppingListProducts] = useState<ShoppingListProductsType[]>([]);
     const [updateProductName, setUpdateProductName] = useState<string>('');
@@ -60,24 +70,39 @@ export default function MainSL() {
 
 
      
-
+    //Initial load
     useEffect( () => {
-        
-        console.log('UseEffect');
-
-        const fetchAllProducts = async() => {
+        const initializeUI = async() => {
             
+            const users: UserType[] = await GetAllUsers();
+            setUsers(users);
+
             const productList: ProductType[] = await GetAllProducts();
             setProductList(productList);
 
             const shoppingLists: ShoppingListsType[] = await GetShoppingListsByUserId(1);
-            setShoppingLists(shoppingLists);
+            setShoppingLists(shoppingLists);            
+        }
+        initializeUI();
+    }, [])
+
+
+    //selected shopping list
+    useEffect( () => {        
+        const getShoppingListProducts = async() => {
             
+            console.log('selectedShoppingList USEEFFECT');
+            console.log(selectedShoppingList);
+            
+            if(selectedShoppingList != null) {            
+                console.log('selectedShoppingList');
+                setShoppingListProducts(await GetShoppingListProductsByShoppingListId(selectedShoppingList?.id));
+            }
         }
 
-        fetchAllProducts();        
-        
-    }, [])
+        getShoppingListProducts();
+
+    },[selectedShoppingList]);
 
 
     const handleLogin = async () => {
@@ -119,6 +144,7 @@ export default function MainSL() {
 
     //Get products added to shoppinglist
     const getProductListToTable = async() => {
+        console.log('getProductListToTable');
         console.log(selectedShoppingList);
 
         if (selectedShoppingList)
@@ -170,16 +196,9 @@ export default function MainSL() {
     }
 
     const updateShoppingListChanged = async(shoppingList: ShoppingListsType | null) => {
-        if (shoppingList)
-        {
-            setSelectedShoppingList(shoppingList);
-            getProductListToTable();
-            
-            if (shoppingList?.id)
-                setShoppingListProducts(await GetShoppingListProductsByShoppingListId(shoppingList?.id));
-    
-        }
-        console.log(shoppingList);
+        if (shoppingList != null) {
+            setSelectedShoppingList(shoppingList);      
+        }        
     }
 
     const deleteProductFromDB = async() => {
@@ -196,6 +215,30 @@ export default function MainSL() {
     return (
     <div>
     
+        {/* ******************************************************************************************** */}
+        {/* Select user */}
+        <Box style={boxStyle} >
+            <Typography style={labelStyle}>Select User</Typography>
+            
+            <Autocomplete 
+                sx={{margin: '20px', width: '300px', backgroundColor: 'wheat'}}
+                disablePortal
+                id="combo-box-users"
+                options={users}
+                getOptionLabel={(option) => option.username}
+                
+                renderInput={(params) => 
+                    <TextField {...params} label="Select User" />
+                }                
+                onChange={(event: any, newValue: UserType | null) => {
+                            setSelectedUser(newValue);
+                         }
+                    }                
+                
+            />                           
+        </Box>
+
+
         {/* ******************************************************************************************** */}
         {/* Select shopping list */}
         <Box style={boxStyle} >
@@ -234,7 +277,8 @@ export default function MainSL() {
                 onChange={handleChange}
                 sx={ {margin: '20px', backgroundColor: 'wheat'}}
             />
-            <Button sx={ {border: "solid", backgroundColor: "black" }} onClick={handleAddNewProduct}>Add new product</Button>
+          
+                <ShoppingListButton onClick={handleAddNewProduct} value={newProductInput}>Add new product</ShoppingListButton>
         </Box>
 
 
@@ -255,8 +299,8 @@ export default function MainSL() {
                 value={selectedProduct}
             />
 
-            <Button sx={ {border: "solid", backgroundColor: "black" }} onClick={handleAddProductToShoppingList}>Add to list</Button>
-            <Button sx={ {border: "solid", backgroundColor: "black", marginLeft: "10px"}} onClick={deleteProductFromDB}>Delete Product from DB</Button>            
+            <ShoppingListButton onClick={handleAddProductToShoppingList} value={selectedProduct}>Add to list</ShoppingListButton>
+            <ShoppingListButton onClick={deleteProductFromDB} value={selectedProduct}>Delete Product from DB</ShoppingListButton>            
         </Box>
 
 

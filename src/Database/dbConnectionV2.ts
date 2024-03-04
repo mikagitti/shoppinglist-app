@@ -1,10 +1,16 @@
 import axios from "axios";
 
-const productsWeb = process.env.NEXT_PUBLIC_PRODUCTS_WEB_ADDRESS_V2;
+const usersApi = process.env.NEXT_PUBLIC_API_V2_USERS;
+const ipAddress = process.env.NEXT_PUBLIC_PRODUCTS_WEB_ADDRESS_V2;
 const productsApi = process.env.NEXT_PUBLIC_API_V2_PRODUCTS;
 const shoppingListsApi = process.env.NEXT_PUBLIC_API_V2_SHOPPINGLISTS;
 const shoppingListProductsApi =
      process.env.NEXT_PUBLIC_API_V2_SHOPPINGLIST_PRODUCTS;
+
+export type UserType = {
+     id: number;
+     username: string;
+};
 
 export type ProductType = {
      id: number;
@@ -40,6 +46,41 @@ export type NewProductToShoppingListType = {
 };
 
 /*****************************/
+/***** GET all users ******/
+/*****************************/
+export const GetAllUsers = async (): Promise<UserType[]> => {
+     console.log(" ** GetAllUsers **");
+
+     let users: UserType[] = [];
+     let catchError;
+
+     const apiClause = `${ipAddress}/${usersApi}`;
+     console.log(apiClause);
+
+     await axios
+          .get<[]>(apiClause)
+          .then((response) => {
+               console.log(response.data);
+               users = response.data;
+          })
+          .catch((error) => {
+               console.error("There was an error!", error);
+               catchError = error;
+          });
+
+     if (catchError) {
+          console.log("GetUsers error");
+          return [
+               {
+                    id: 0,
+                    username: "empty",
+               },
+          ];
+     }
+     return users;
+};
+
+/*****************************/
 /***** GET all products ******/
 /*****************************/
 export const GetAllProducts = async (): Promise<ProductType[]> => {
@@ -48,7 +89,7 @@ export const GetAllProducts = async (): Promise<ProductType[]> => {
      let products: ProductType[] = [];
      let catchError;
 
-     const apiClause = `${productsWeb}/${productsApi}`;
+     const apiClause = `${ipAddress}/${productsApi}`;
      console.log(apiClause);
 
      await axios
@@ -88,7 +129,7 @@ export const AddNewProduct = async (productName: string) => {
 
      try {
           const response = await axios.post(
-               productsWeb + "/" + productsApi,
+               ipAddress + "/" + productsApi,
                { productName: productName, description: "" },
                {
                     headers: {
@@ -113,7 +154,7 @@ export const DeleteProduct = async (productid: number) => {
 
      try {
           const response = await axios.delete(
-               productsWeb + "/" + productsApi + `/${productid}`,
+               ipAddress + "/" + productsApi + `/${productid}`,
                {
                     headers: {
                          "Content-Type": "application/json",
@@ -140,7 +181,7 @@ export const GetShoppingListsByUserId = async (
      let shoppingLists: ShoppingListsType[] = [];
      let catchError;
 
-     const apiClause = `${productsWeb}/${shoppingListsApi}/${id}`;
+     const apiClause = `${ipAddress}/${shoppingListsApi}/${id}`;
 
      await axios
           .get<ShoppingListsType[]>(apiClause)
@@ -176,7 +217,7 @@ export const GetShoppingListProductsByShoppingListId = async (
      let shoppingListProducts: ShoppingListProductsType[] = [];
      let catchError;
 
-     const apiClause = `${productsWeb}/${shoppingListProductsApi}/${id}`;
+     const apiClause = `${ipAddress}/${shoppingListProductsApi}/${id}`;
      console.log(apiClause);
 
      await axios
@@ -203,7 +244,7 @@ export const GetShoppingListProductsByShoppingListId = async (
 export const UpdateProductNameById = async (id: number, name: string) => {
      console.log("UpdateProductNameById: ", { id, name });
 
-     const apiClause = `${productsWeb}/${productsApi}/${id}`;
+     const apiClause = `${ipAddress}/${productsApi}/${id}`;
      console.log(apiClause);
 
      try {
@@ -233,7 +274,7 @@ export const UpdateProductCheckedInShoppingListByShoppingListIdAndProductId =
                { shoppingListId, productId, checked }
           );
 
-          const apiClause = `${productsWeb}/${shoppingListProductsApi}/${shoppingListId}`;
+          const apiClause = `${ipAddress}/${shoppingListProductsApi}/${shoppingListId}`;
           console.log(apiClause);
 
           try {
@@ -267,7 +308,7 @@ export const AddNewProductToShoppingList = async (
 
      try {
           const response = await axios.post(
-               productsWeb + "/" + shoppingListProductsApi,
+               ipAddress + "/" + shoppingListProductsApi,
                { shoppinglist_id: shoppinglistid, product_id: productid },
                {
                     headers: {
@@ -292,7 +333,7 @@ export const RemoveProductFromShoppingList = async (productid: number) => {
 
      try {
           const response = await axios.delete(
-               productsWeb + "/" + shoppingListProductsApi + `/${productid}`,
+               ipAddress + "/" + shoppingListProductsApi + `/${productid}`,
                {
                     headers: {
                          "Content-Type": "application/json",
