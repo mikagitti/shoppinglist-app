@@ -80,8 +80,8 @@ export default function MainSL() {
             const productList: ProductType[] = await GetAllProducts();
             setProductList(productList);
 
-            const shoppingLists: ShoppingListsType[] = await GetShoppingListsByUserId(1);
-            setShoppingLists(shoppingLists);            
+            //const shoppingLists: ShoppingListsType[] = await GetShoppingListsByUserId(1);
+            //setShoppingLists(shoppingLists);
         }
         initializeUI();
     }, [])
@@ -90,19 +90,25 @@ export default function MainSL() {
     //selected shopping list
     useEffect( () => {        
         const getShoppingListProducts = async() => {
-            
-            console.log('selectedShoppingList USEEFFECT');
-            console.log(selectedShoppingList);
-            
             if(selectedShoppingList != null) {            
                 console.log('selectedShoppingList');
                 setShoppingListProducts(await GetShoppingListProductsByShoppingListId(selectedShoppingList?.id));
             }
         }
-
         getShoppingListProducts();
-
     },[selectedShoppingList]);
+
+    //selected user
+    useEffect( () => {        
+        const getUserShoppingLists = async() => {            
+            if(selectedUser != null) {
+                const userShoppingLists:ShoppingListsType[] = await GetShoppingListsByUserId(selectedUser?.id)
+                setShoppingLists(userShoppingLists);
+            }
+        }
+        getUserShoppingLists();
+        setShoppingListProducts([]);
+    },[selectedUser]);
 
 
     const handleLogin = async () => {
@@ -206,9 +212,12 @@ export default function MainSL() {
             await DeleteProduct(selectedProduct.id);
 
             const productList = await GetAllProducts();
-            setProductList(productList);            
-
+            setProductList(productList);                 
             setSelectedProduct(null);
+            
+            if(selectedShoppingList != null) {
+                setShoppingListProducts(await GetShoppingListProductsByShoppingListId(selectedShoppingList.id));
+            }
         }
     }
 
@@ -221,7 +230,7 @@ export default function MainSL() {
             <Typography style={labelStyle}>Select User</Typography>
             
             <Autocomplete 
-                sx={{margin: '20px', width: '300px', backgroundColor: 'wheat'}}
+                sx={{margin: '20px', width: '300px', backgroundColor: 'hsl(48, 65%, 78%)'}}
                 disablePortal
                 id="combo-box-users"
                 options={users}
@@ -232,8 +241,12 @@ export default function MainSL() {
                 }                
                 onChange={(event: any, newValue: UserType | null) => {
                             setSelectedUser(newValue);
+                            setSelectedShoppingList(null);
                          }
-                    }                
+                    }
+                    PaperComponent={({ children }) => (
+                        <Paper sx={{ bgcolor: 'rgb(250, 99, 71)', color: 'black', border: 'solid 4px' }}>{children}</Paper> // Change dropdown list background color
+                      )}                
                 
             />                           
         </Box>
@@ -245,19 +258,23 @@ export default function MainSL() {
             <Typography style={labelStyle}>Select shopping list</Typography>
             
             <Autocomplete 
-                sx={{margin: '20px', width: '300px', backgroundColor: 'wheat'}}
+                sx={{margin: '20px', width: '300px', backgroundColor: 'hsl(48, 65%, 78%)'}}
                 disablePortal
                 id="combo-box-shoppinglists"
                 options={shoppingLists}
                 getOptionLabel={(option) => option.name}                
-                
                 renderInput={(params) => 
                     <TextField {...params} label="Select shopping list" />
                 }                
                 onChange={(event: any, newValue: ShoppingListsType | null) => {
-                            updateShoppingListChanged(newValue);
+                            setSelectedShoppingList(newValue);                            
                          }
-                    }                
+                    }
+                    PaperComponent={({ children }) => (
+                        <Paper sx={{ bgcolor: 'rgb(250, 99, 71)', color: 'black', border: 'solid 4px' }}>{children}</Paper> // Change dropdown list background color
+                      )} 
+                value={selectedShoppingList}
+                disabled={!selectedUser}
                 
             />
 
@@ -275,7 +292,7 @@ export default function MainSL() {
                 variant="outlined"
                 value={newProductInput}
                 onChange={handleChange}
-                sx={ {margin: '20px', backgroundColor: 'wheat'}}
+                sx={ {margin: '20px', backgroundColor: 'hsl(48, 65%, 78%)'}}                
             />
           
                 <ShoppingListButton onClick={handleAddNewProduct} value={newProductInput}>Add new product</ShoppingListButton>
@@ -286,7 +303,7 @@ export default function MainSL() {
         {/* CHOOSE and ADD product to shopping list */}
         <Box style={boxStyle} >
             <Typography style={labelStyle}>Select product to add to shopping list</Typography>
-            <Autocomplete sx={ {margin: '20px', width: '300px', backgroundColor: 'wheat'}}
+            <Autocomplete sx={ {margin: '20px', width: '300px', backgroundColor: 'hsl(48, 65%, 78%)'}}
                 options={productList}
                 getOptionLabel={(option) => option.name}
                 isOptionEqualToValue={(option, value) => option.id === value.id}
@@ -296,7 +313,11 @@ export default function MainSL() {
                 onChange={(event: any, newValue: ProductType | null) => {                    
                     setSelectedProduct(newValue);
                 }}
+                PaperComponent={({ children }) => (
+                    <Paper sx={{ bgcolor: 'rgb(250, 99, 71)', color: 'black', border: 'solid 4px' }}>{children}</Paper> // Change dropdown list background color
+                  )} 
                 value={selectedProduct}
+                disabled={!selectedShoppingList}
             />
 
             <ShoppingListButton onClick={handleAddProductToShoppingList} value={selectedProduct}>Add to list</ShoppingListButton>
@@ -307,13 +328,20 @@ export default function MainSL() {
         {/* ******************************************************************************************** */}
         {/* SHOW shopping list as a list */}
         <Box sx={ {display: 'flex', marginTop: '30px'}}>
-          {shoppingListProducts.length > 0 && <ShoppingListProducts /> }
+          {shoppingListProducts.length > 0 && <ShoppingListProducts /> || <EmptyShoppingList /> }
         </Box>
 
 
     </div>    
     );
 
+    function EmptyShoppingList() {
+        return (
+            <>
+            <h1>No products in shopping list</h1>
+            </>
+        )
+    }
 
     function ShoppingListProducts() {
         return (
