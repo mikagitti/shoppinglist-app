@@ -24,8 +24,8 @@ type ProductListItemType = {
 const getIcon = (product: ProductListType) => {
     return (
         product.productInShoppingList == false ? 
-        <AddCircleIcon className='add-icon' /> : //If product is not in shoppinglist, show plus icon.
-        <RemoveCircleIcon className='remove-icon' /> //Otherwise show minus icon. 
+        <AddCircleIcon sx={ {color: 'green'}} /> : //If product is not in shoppinglist, show plus icon.
+        <RemoveCircleIcon sx={ {color: 'red'}} /> //Otherwise show minus icon. 
     )
 }
 
@@ -34,7 +34,7 @@ export default function ProductListItem({ product } : ProductListItemType) {
     const {checkProductListProduct} = useContext(ProductListContext)
     const {ModifyShoppingList} = useContext(ShoppingListContext)
 
-    function handleCheckProduct(id: number, product: string) {
+    function handleCheckProduct(id: string, product: string) {
         checkProductListProduct(id);
         ModifyShoppingList(id, product);
     }
