@@ -46,7 +46,8 @@ export default function ProductListItem({ product } : ProductListItemType) {
                     sx={ {
                         ":hover": {
                         backgroundColor: '#DEB887',
-                        cursor: 'pointer'
+                        cursor: 'pointer',
+                        borderRadius: 3,
                         }}}
                 >
                 <ListItemIcon>

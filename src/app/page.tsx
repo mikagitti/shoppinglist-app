@@ -1,15 +1,13 @@
-'use client'
-
+import { Box } from '@mui/material';
+import Link from 'next/link';
 import React from 'react';
 
-import { HeaderListProvider } from '../Context/Header/HeaderContext';
-import IndexComponent from '@/Components/Index/IndexComponent';
-
 export default function Home() {
-
-  return (        
-      <HeaderListProvider>
-        <IndexComponent />
-      </HeaderListProvider>    
+  return (
+    <Box sx={ {display: 'flex', justifyContent: 'center'}}>
+      <Link 
+        href="/home"
+        style={ {fontSize: '25px'}}>ENTER</Link>
+    </Box>          
   )
 }

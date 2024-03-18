@@ -1,12 +1,12 @@
 import { useContext } from "react";
-import { AppBar, Button, Toolbar, Typography } from "@mui/material";
+import { AppBar, Box, Button, Toolbar, Typography } from "@mui/material";
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 
 import HeaderListContext, { ActiveHeaderType, HeaderType } from '../../Context/Header/HeaderContext';
 import PositionedMenu from "./MenuButton";
 import MenuButton from "./MenuButton";
 
-export default function NavBar() {
+export default function ShoppingListNavBar() {
 
     const {headerList, chooseHeader } = useContext(HeaderListContext);
 
@@ -18,15 +18,17 @@ export default function NavBar() {
 
     return (
         <AppBar position="static">
-            <Toolbar>            
+            <Toolbar>
                 <Typography sx={{ flexGrow: 1 }}>
-                    <ShoppingCartIcon sx={ {fontSize: '45px'}} onClick={() => handleHeaderClick({id: 1, headerName: 'Home'})}/>
-                </Typography>                
+                    
+                </Typography>
+                <Box sx={{ display: 'flex', gap: 2 }}>
                 {
                     headerList.map((header, index) => (
                         <Button key={index} sx={ {border: 'solid 1px', margin: '0 5px' }} color="inherit" onClick={() => handleHeaderClick(header)}>{header.headerName}</Button>
                     ))
                 }
+                </Box>
                 
             </Toolbar>            
         </AppBar>
