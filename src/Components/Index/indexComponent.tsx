@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 
 import Home from "@/Components/Home/HomeComponent";
-import NavBar from "@/Containers/Header/header";
+import ShoppingListNavBar from "@/Containers/Header/header";
 import ProductListComponent from "@/Containers/ProductList/ProductListComponent";
 import ShoppinListComponent from "@/Containers/ShoppingList/ShoppingListComponent";
 import { ProductListProvider } from "@/Context/ProductList/ProductListContext";
@@ -25,7 +25,8 @@ export default function IndexComponent() {
 
     return (
 <>
-        <NavBar />
+        
+        <ShoppingListNavBar />
         
         <Container  >
             {

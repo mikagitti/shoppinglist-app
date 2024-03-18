@@ -20,7 +20,6 @@ export type ProductType = {
 
 export type ShoppingListsType = {
      id: number;
-     shoppinglist_id: number;
      name: string;
 };
 
@@ -125,11 +124,12 @@ export const GetAllProducts = async (): Promise<ProductType[]> => {
 /***** Add new product  ******/
 /*****************************/
 export const AddNewProduct = async (productName: string) => {
-     console.log({ productName });
+     const apiClause = `${ipAddress}/${productsApi}`;
+     console.log(apiClause);
 
      try {
           const response = await axios.post(
-               ipAddress + "/" + productsApi,
+               apiClause,
                { productName: productName, description: "" },
                {
                     headers: {
@@ -149,18 +149,15 @@ export const AddNewProduct = async (productName: string) => {
 /***** Delete product  ******/
 /****************************/
 export const DeleteProduct = async (productid: number) => {
-     console.log("Delete product");
-     console.log({ productid });
+     const apiClause = `${ipAddress}/${productsApi}/${productid}`;
+     console.log(apiClause);
 
      try {
-          const response = await axios.delete(
-               ipAddress + "/" + productsApi + `/${productid}`,
-               {
-                    headers: {
-                         "Content-Type": "application/json",
-                    },
-               }
-          );
+          const response = await axios.delete(apiClause, {
+               headers: {
+                    "Content-Type": "application/json",
+               },
+          });
 
           console.log(
                "Product removed successfully from shoppinglist:",
@@ -169,6 +166,87 @@ export const DeleteProduct = async (productid: number) => {
           console.log("Status:", response.status);
      } catch (error) {
           console.error("Error removing product from shoppinglist:", error);
+     }
+};
+
+/********************************************/
+/***** Add new shopping list for user  ******/
+/********************************************/
+export const AddNewShoppingListForUser = async (
+     name: string,
+     userId: number
+) => {
+     console.log("AddNewShoppingListForUser: ", { userId, name });
+
+     const apiClause = `${ipAddress}/${shoppingListsApi}`;
+     console.log(apiClause);
+
+     try {
+          const response = await axios.post(
+               apiClause,
+               {
+                    name: name,
+                    userid: userId,
+               },
+               {
+                    headers: {
+                         "Content-Type": "application/json",
+                    },
+               }
+          );
+
+          console.log("Data insert successfully:", response.data);
+          console.log("Status:", response.status);
+     } catch (error) {
+          console.error("Error updating data:", error);
+     }
+};
+
+/**************************************/
+/***** Update shopping list name ******/
+/**************************************/
+export const UpdateShoppingListName = async (id: number, name: string) => {
+     const apiClause = `${ipAddress}/${shoppingListsApi}/${id}`;
+     console.log(apiClause);
+
+     try {
+          const response = await axios.put(
+               apiClause,
+               { name: name },
+               {
+                    headers: {
+                         "Content-Type": "application/json",
+                    },
+               }
+          );
+
+          console.log(
+               "Shopping list name updated successfully:",
+               response.data
+          );
+     } catch (error) {
+          console.error("Error updating shopping list name:", error);
+     }
+};
+
+/**********************************/
+/***** Remove shopping list  ******/
+/**********************************/
+export const RemoveShoppingList = async (id: number) => {
+     const apiClause = `${ipAddress}/${shoppingListProductsApi}/all/${id}`;
+     console.log(apiClause);
+
+     try {
+          const response = await axios.delete(apiClause, {
+               headers: {
+                    "Content-Type": "application/json",
+               },
+          });
+
+          console.log("Shopping list removed successfully:", response.data);
+          console.log("Status:", response.status);
+     } catch (error) {
+          console.error("Error removing shopping list:", error);
      }
 };
 
@@ -198,7 +276,6 @@ export const GetShoppingListsByUserId = async (
           return [
                {
                     id: -1,
-                    shoppinglist_id: -1,
                     name: "-1 empty",
                },
           ];

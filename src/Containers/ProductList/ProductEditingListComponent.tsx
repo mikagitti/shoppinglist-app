@@ -5,7 +5,6 @@ import React, { useContext, useState } from 'react';
 
 import DeleteIcon from '@mui/icons-material/Delete';
 import ModeEditOutlineIcon from '@mui/icons-material/ModeEditOutline';
-import SaveAsTwoToneIcon from '@mui/icons-material/SaveAsTwoTone';
 
 import { deleteProductFromDB } from "../../Database/dbConnection";
 
@@ -52,7 +51,6 @@ const ProductList = ({ productList, onDelete, onModify, onDeleteDB }: ProductLis
                 }}}>
             
                 <ListItemText primary={product.productName} />
-                <ListItemText primary={product.productInShoppingList ? 'TRUE' : 'FALSE'} />
             
                 <ListItemIcon onClick={() => onModify(product.id, product.productName)}>
                     <ModeEditOutlineIcon sx={iconStyle}/>

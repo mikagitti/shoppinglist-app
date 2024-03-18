@@ -11,14 +11,14 @@ type CurrentComponentProps = {
     onClose: () => void;
     productId: string;
   }
-
-  const Item = styled(Paper)(({ theme }) => ({
-    backgroundColor: 'grey',
-    ...theme.typography.body2,
-    padding: theme.spacing(1),
-    textAlign: 'center',
-    color: 'blue',
-  }));
+  
+const Item = styled(Paper)(({ theme }) => ({
+  backgroundColor: 'grey',
+  ...theme.typography.body2,
+  padding: theme.spacing(1),
+  textAlign: 'center',
+  color: 'blue',
+}));
 
 export default function EditProductComponent( {onClose, productId} : CurrentComponentProps) {
 
@@ -46,9 +46,11 @@ export default function EditProductComponent( {onClose, productId} : CurrentComp
     function InputAndSaveAndCloseGroup() {
       return (
         <Grid container spacing={2} alignItems="center">
+          
           <Grid item xs>
-            <TextField fullWidth value={productName} variant="outlined" onChange={handleChange} />
+            <TextField fullWidth value={productName} variant="filled" onChange={handleChange} />
           </Grid>
+          
           <Grid item>            
             <Button 
               variant="contained" 
@@ -57,12 +59,14 @@ export default function EditProductComponent( {onClose, productId} : CurrentComp
               <SaveAsTwoToneIcon />
             </Button>
           </Grid>
+          
           <Grid item>
             <IconButton aria-label="close" onClick={onClose}>
               <CloseIcon />
             </IconButton>
           </Grid>
-        </Grid>
+
+        </Grid>        
       );
     }
 

@@ -1,28 +1,41 @@
-import React, { createContext, useState, ReactNode } from 'react';
+'use client'
+import React, { createContext, useState, ReactNode, useContext } from 'react';
+import { ThemeProvider as MUIThemeProvider } from '@mui/material/styles';
+import { lightTheme, darkTheme } from './themes';
 
-type ThemeType = {
-  theme: string;
-  toggleTheme: () => void;
+enum ThemeType {light, dark};
+
+type ThemeContextType = {  
+  toggleTheme: () => void;    
 }
 
-const defaultState: ThemeType = {
-  theme: 'light',
+const defaultState: ThemeContextType = {  
   toggleTheme: () => {},
 };
 
-// Create the context
-const ThemeContext = createContext<ThemeType>(defaultState);
+const ThemeContext = createContext<ThemeContextType>(defaultState);
+
+export const useTheme = () => {
+  const context = useContext(ThemeContext);
+  if (context === undefined) {
+    throw new Error('useTheme must be used within a ThemeProvider');
+  }
+  return context;
+};
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
-  const [theme, setTheme] = useState('light');
-
-  const toggleTheme = () => {
-    setTheme(theme === 'light' ? 'dark' : 'light');
+  
+  const [theme, setTheme] = useState<ThemeType>(ThemeType.dark);
+  
+  const toggleTheme = () => {    
+    setTheme((prevTheme) => (prevTheme === ThemeType.light ? ThemeType.dark : ThemeType.light));
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
-      {children}
+    <ThemeContext.Provider value={{ toggleTheme }}>
+      <MUIThemeProvider theme={theme === ThemeType.light ? lightTheme : darkTheme}>
+        {children}
+      </MUIThemeProvider>
     </ThemeContext.Provider>
   );
 };
