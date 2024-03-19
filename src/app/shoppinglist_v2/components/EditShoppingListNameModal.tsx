@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { Box, Button, Modal, TextField, Typography } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import { CSSProperties } from '@mui/material/styles/createMixins';
-import { ShoppingListsType, UpdateShoppingListName } from '@/Database/dbConnectionV2';
+import { ShoppingListType, UpdateShoppingListName } from '@/Database/dbConnectionV2';
 import { RestaurantMenu } from '@mui/icons-material';
 
 interface ModalProps {
   onClose: () => void;
-  shoppingList: ShoppingListsType | null;
+  shoppingList: ShoppingListType | null;
 }
 
 const modalStyle : CSSProperties = {
@@ -30,24 +30,29 @@ const backgroundStyle = {
 }
 
 
-export const EditShoppingListModal = ({ onClose, shoppingList } : ModalProps) => {
-  
-  useEffect(() => {
-    if (shoppingList == null) {      
-      return;
-    }
-    else {
-      setNewName(shoppingList.name);
-    }
-  }, [shoppingList]); 
- 
+export const EditShoppingListNameModal = ({ onClose, shoppingList } : ModalProps) => {
 
   const [newName, setNewName] = useState<string>('');
   const [helperText, setHelperText] = useState('');
 
+
+  useEffect(() => {    
+    if (shoppingList == null || shoppingList == undefined) {
+      return;
+    }
+    else {
+      console.log('name=', shoppingList.name)
+      if(shoppingList.name) {
+        setNewName(shoppingList.name);
+        console.log('ja name=', shoppingList.name)
+      }
+    }
+  }, []); 
+ 
+
   const saveShoppingListName = async() => {
-    if(newName.length < 5){
-      setHelperText('Name minimun is 5 letters!');     
+    if(newName != null && newName != undefined && newName.length < 5) {
+      setHelperText('Name minimun is 3 letters!');     
       return;
     }   
 
@@ -76,7 +81,7 @@ export const EditShoppingListModal = ({ onClose, shoppingList } : ModalProps) =>
                       sx={ {marginTop: '10px', marginBottom: '20px'}}
                       />
                       <Stack gap={2}>
-              <Button variant="outlined" onClick={() => saveShoppingListName()} disabled={newName.length > 5 ? false : true} >Yes</Button>
+              <Button variant="outlined" onClick={() => saveShoppingListName()} disabled={newName && newName.length > 2 ? false : true} >Yes</Button>
               <Button variant="outlined" onClick={() => closeModal()}>No</Button>
           </Stack>
         </Box>      

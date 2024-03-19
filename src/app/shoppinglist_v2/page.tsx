@@ -1,16 +1,17 @@
 'use client'
 
-import ShoppingListCard from "./components/Card";
 import { useEffect, useState } from "react";
-import { GetShoppingListsByUserId, ShoppingListsType } from "@/Database/dbConnectionV2";
+import Link from "next/link";
+
+import { GetShoppingListsByUserId, ShoppingListType } from "@/Database/dbConnectionV2";
 import { NewShoppingListModal } from "./components/NewShoppingListModal";
 import { DeleteShoppingListModal } from "./components/DeleteShoppingListModal";
-import { EditShoppingListModal } from "./components/EditShoppingListModal";
-import Link from "next/link";
+import { EditShoppingListNameModal } from "./components/EditShoppingListNameModal";
+import ShoppingListCard from "./components/ShoppingListCard";
+
 import { Box, Grid, IconButton, Typography } from "@mui/material";
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import SettingsIcon from '@mui/icons-material/Settings';
-
 
 type UserProps = {
     userId: number;
@@ -20,20 +21,18 @@ export default function ShoppingListV2( {userId = 1} : UserProps) {
 
     const [isNewShoppingListModelOpen, setIsNewShoppingListModelOpen] = useState<boolean>(false);
     const [isDeleteShoppingListModelOpen, setIsDeleteShoppingListModelOpen] = useState<boolean>(false);
-    const [isEditShoppingListModelOpen, setIsEditShoppingListModelOpen] = useState<boolean>(false);
-    const [oldName, setOldName] = useState<string>('');
-    const [selectedShoppingList, setSelectedShoppingList] = useState<ShoppingListsType | null>(null);
-    const [shoppingLists, setShoppingLists] = useState<ShoppingListsType[]>([]);
+    const [isEditShoppingListModelOpen, setIsEditShoppingListModelOpen] = useState<boolean>(false);    
+    const [selectedShoppingList, setSelectedShoppingList] = useState<ShoppingListType | null>(null);
+    const [shoppingLists, setShoppingLists] = useState<ShoppingListType[]>([]);
 
 
     useEffect( () => {
         updateUserShoppingListView();
     }, [isNewShoppingListModelOpen, isDeleteShoppingListModelOpen, isEditShoppingListModelOpen]);
 
-    const editShoppingListName = (shoppingList: ShoppingListsType) => {
+    const editShoppingListName = (shoppingList: ShoppingListType) => {
         setIsEditShoppingListModelOpen(true);
-        setSelectedShoppingList(shoppingList);
-        setOldName(shoppingList.name);        
+        setSelectedShoppingList(shoppingList);    
     }
 
     const onCloseEdit = () => {
@@ -41,7 +40,7 @@ export default function ShoppingListV2( {userId = 1} : UserProps) {
         setIsEditShoppingListModelOpen(false);
     }
 
-    const deleteShoppingList = (shoppingList: ShoppingListsType) =>{        
+    const deleteShoppingList = (shoppingList: ShoppingListType) =>{        
         setSelectedShoppingList(shoppingList);
         setIsDeleteShoppingListModelOpen(true);        
     }
@@ -52,7 +51,7 @@ export default function ShoppingListV2( {userId = 1} : UserProps) {
     }
 
     const updateUserShoppingListView = async() => {        
-        const result:ShoppingListsType[] = await GetShoppingListsByUserId(userId);
+        const result:ShoppingListType[] = await GetShoppingListsByUserId(userId);
         setShoppingLists(result);
     }
 
@@ -65,6 +64,8 @@ export default function ShoppingListV2( {userId = 1} : UserProps) {
         <Box>
             <Box display='flex' justifyContent="center" m={3} >                
                 <Grid container spacing={2} >
+                    
+                    { /* ADD NEW SHOPPING LIST */ }
                     <Grid item xs={12} sm={6}>
                         <IconButton onClick={() => setIsNewShoppingListModelOpen(true)}>
                             <NoteAddIcon /> 
@@ -73,6 +74,8 @@ export default function ShoppingListV2( {userId = 1} : UserProps) {
                             </Typography>
                         </IconButton>
                     </Grid>
+                    
+                    { /* MANAGE PRODUCTS */ }
                     <Grid item xs={12} sm={6}>
                         <Link href="/shoppinglist_v2/manageproducts">
                             <IconButton>
@@ -83,10 +86,12 @@ export default function ShoppingListV2( {userId = 1} : UserProps) {
                             </IconButton>
                         </Link>
                     </Grid>
+                    
+                    { /*LIST ALL SHOPPING LISTS*/ }
                     {
                     shoppingLists?.map((x, index) => {
                         return(    
-                            <Grid key={index} item xs={12} sm={6}>                                
+                            <Grid key={index} item xs={12} sm={6} xl={3}>                                
                                 <ShoppingListCard shoppingList={x} deleteShoppingList={() => deleteShoppingList(x)} edit={() => {editShoppingListName(x)}} />
                             </Grid>
                         )
@@ -95,9 +100,14 @@ export default function ShoppingListV2( {userId = 1} : UserProps) {
                 </Grid>
             </Box>
             
+            { /* ADD new shopping list */ }
             {isNewShoppingListModelOpen && <NewShoppingListModal onClose={() => addNewShoppingList()} userId={userId} />}
+            
+            { /* DELETE shopping list */ }
             {isDeleteShoppingListModelOpen && <DeleteShoppingListModal onClose={() => onCloseDelete()} shoppingList={selectedShoppingList} />}
-            {isEditShoppingListModelOpen && <EditShoppingListModal onClose={() => onCloseEdit()} shoppingList={selectedShoppingList} />}
+            
+            { /* EDIT shopping list name */ }
+            {isEditShoppingListModelOpen && <EditShoppingListNameModal onClose={() => onCloseEdit()} shoppingList={selectedShoppingList} />}
             
         </Box>
     )

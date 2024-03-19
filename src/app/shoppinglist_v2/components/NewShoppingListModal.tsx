@@ -38,7 +38,7 @@ export const NewShoppingListModal = ({ onClose, userId } : ModalProps) => {
   const saveNewShoppingList = async() => {
 
     if(name.length < 5){
-      setHelperText('Name minimun is 5 letters!');     
+      setHelperText('Name minimun is 3 letters!');     
       return;
     }    
     
@@ -63,7 +63,7 @@ export const NewShoppingListModal = ({ onClose, userId } : ModalProps) => {
                           onChange={(e) => setName(e.target.value)} 
                           label="Add name here"
                           helperText={helperText}/>
-              <Button variant="outlined" onClick={() => saveNewShoppingList()} disabled={name.length > 5 ? false : true} >Save</Button>
+              <Button variant="outlined" onClick={() => saveNewShoppingList()} disabled={name.length > 2 ? false : true} >Save</Button>
               <Button variant="outlined" onClick={() => closeModal()}>Close</Button>
           </Stack>
         </Box>      

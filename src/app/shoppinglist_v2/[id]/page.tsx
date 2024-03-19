@@ -1,21 +1,21 @@
 'use client'
 import React, { useEffect, useState } from "react";
+
+import { Box, Button, Typography } from "@mui/material";
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
+
 import { 
     GetShoppingListProductsByShoppingListId, 
     ShoppingListProductsType, 
     RemoveProductFromShoppingList, 
     GetAllProducts, 
     ProductType, 
-    AddNewProductToShoppingList 
+    AddNewProductToShoppingList, 
 } from "@/Database/dbConnectionV2";
-import { Box, Button, Typography } from "@mui/material";
-import { BoxStyle, ButtonStyle } from "../components/Styles";
-import AddProduct from "../components/AddProduct";
-import ProductListItem, { iconType } from "../components/productListItem";
-import AddSharpIcon from '@mui/icons-material/AddSharp';
-import DeleteIcon from '@mui/icons-material/Delete';
-import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 
+import { BoxStyle, ButtonStyle } from "../components/Styles";
+import ProductListItem, { iconType } from "../components/productListItem";
 
 export default function Page({ params }: { params: { id: number } }) {
 
@@ -33,16 +33,17 @@ export default function Page({ params }: { params: { id: number } }) {
 
     const [shoppingListProducts, setShoppingListProducts] = useState<ShoppingListProductsType[]>([]);        
     const [allProducts, setAllProducts] = useState<ProductType[]>([]);
-    const [addingProduct, setAddingProduct] = useState<boolean>(false);
+    const [addingProduct, setAddingProduct] = useState<boolean>(false);    
 
-    useEffect( () => {
-        fetchShoppingListProductsToMemory();        
+    useEffect( () => {        
+        fetchShoppingListProductsToMemory();                
     }, []);
 
     useEffect( () => {
-        fetchAwailableProductsToMemory();  
+        fetchAwailableProductsToMemory();        
     }, [shoppingListProducts]);
 
+    
     //Open/Close adding more products to shopping list
     const openAddProduct = async() => {
         if(!addingProduct) {            
@@ -52,6 +53,7 @@ export default function Page({ params }: { params: { id: number } }) {
         }
         setAddingProduct(!addingProduct);
     }
+
 
     const fetchShoppingListProductsToMemory = async() => {        
         const shoppingListProducts : ShoppingListProductsType[] = await GetShoppingListProductsByShoppingListId(params.id);
@@ -65,7 +67,6 @@ export default function Page({ params }: { params: { id: number } }) {
 
     //REMOVE
     const removeProductFromList = async(id : number) => {
-        console.log('remove');
         await RemoveProductFromShoppingList(id);
         await fetchShoppingListProductsToMemory();
     }
@@ -75,7 +76,6 @@ export default function Page({ params }: { params: { id: number } }) {
         await AddNewProductToShoppingList(shoppingListId, id);
         await fetchShoppingListProductsToMemory();        
     }
-        
 
     return (
         <>      
@@ -93,7 +93,7 @@ export default function Page({ params }: { params: { id: number } }) {
                 sx={ButtonStyle}
                 onClick={openAddProduct}
             >
-                {addingProduct ? 'Close' : 'Add more products to list' }                
+                {addingProduct ? 'Close' : 'Add products from here' }                
             </Button>
         </Box>
         
@@ -110,7 +110,7 @@ export default function Page({ params }: { params: { id: number } }) {
                 })
                 }
             </Box>
-            ) : (            
+        ):(
             
             <Box sx={ {maxWidth: '500px'}}>
             {            

@@ -79,8 +79,7 @@ export default function Page() {
     </Box>
 
   {
-    isNewProductModal &&
-    <NewProductModal onClose={closeModal} />
+    isNewProductModal && <NewProductModal onClose={closeModal} />
   }
   </>
     )
