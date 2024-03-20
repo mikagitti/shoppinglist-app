@@ -18,9 +18,10 @@ export type ProductType = {
      description: string;
 };
 
-export type ShoppingListsType = {
+export type ShoppingListType = {
      id: number;
      name: string;
+     user_id: number;
 };
 
 export type ShoppingListProductsType = {
@@ -255,14 +256,14 @@ export const RemoveShoppingList = async (id: number) => {
 /*****************************************/
 export const GetShoppingListsByUserId = async (
      id: number
-): Promise<ShoppingListsType[]> => {
-     let shoppingLists: ShoppingListsType[] = [];
+): Promise<ShoppingListType[]> => {
+     let shoppingLists: ShoppingListType[] = [];
      let catchError;
 
-     const apiClause = `${ipAddress}/${shoppingListsApi}/${id}`;
+     const apiClause = `${ipAddress}/${shoppingListsApi}/user/${id}`;
 
      await axios
-          .get<ShoppingListsType[]>(apiClause)
+          .get<ShoppingListType[]>(apiClause)
           .then((response) => {
                shoppingLists = response.data;
           })
@@ -277,10 +278,43 @@ export const GetShoppingListsByUserId = async (
                {
                     id: -1,
                     name: "-1 empty",
+                    user_id: -1,
                },
           ];
      }
      return shoppingLists;
+};
+
+/*****************************************/
+/***** GET shopping list by ID ******/
+/*****************************************/
+export const GetShoppingListById = async (
+     id: number
+): Promise<ShoppingListType> => {
+     let catchError;
+     let shoppingList: ShoppingListType = {
+          id: -1,
+          name: "-1 empty",
+          user_id: -1,
+     };
+
+     const apiClause = `${ipAddress}/${shoppingListsApi}/id/${id}`;
+     console.log(apiClause);
+
+     await axios
+          .get<ShoppingListType>(apiClause)
+          .then((response) => {
+               shoppingList = response.data;
+          })
+          .catch((error) => {
+               console.error("There was an error!", error);
+               catchError = error;
+          });
+
+     if (catchError) {
+          console.log("GetShoppingListsByUserId error");
+     }
+     return shoppingList;
 };
 
 /*********************************************************/

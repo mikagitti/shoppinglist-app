@@ -1,129 +1,93 @@
 'use client'
 import React, { useEffect, useState } from "react";
-import { 
-    GetShoppingListProductsByShoppingListId, 
-    ShoppingListProductsType, 
-    RemoveProductFromShoppingList, 
-    GetAllProducts, 
-    ProductType, 
-    AddNewProductToShoppingList 
-} from "@/Database/dbConnectionV2";
-import { Box, Button, Typography } from "@mui/material";
-import { BoxStyle, ButtonStyle } from "../components/Styles";
-import AddProduct from "../components/AddProduct";
-import ProductListItem, { iconType } from "../components/productListItem";
-import AddSharpIcon from '@mui/icons-material/AddSharp';
+
+import { Box, Button, Divider, Typography } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 
+import { 
+    GetShoppingListById,
+    GetShoppingListProductsByShoppingListId, 
+    ShoppingListProductsType,
+    ShoppingListType, 
+} from "@/Database/dbConnectionV2";
 
-export default function Page({ params }: { params: { id: number } }) {
+import { BoxStyle, ButtonStyle } from "../components/Styles";
+import ProductListItem, { iconType } from "../components/productListItem";
 
-    const IconPropsForAddingProduct : iconType = {
-        icon: AddShoppingCartIcon,
-        color: 'green',
-    };
+const IconPropsForAddingProduct : iconType = {
+    icon: AddCircleIcon,
+    color: 'green',
+};
+const IconPropsForDeletingProduct : iconType = {
+    icon: RemoveCircleIcon,
+    color: 'red',    
+};
 
-    const IconPropsForDeletingProduct : iconType = {
-        icon: DeleteIcon,
-        color: 'red',    
-    };
-      
-    const shoppingListId : number = params.id;
+export default function Page({ params }: { params: { id: number, name: string } }) {
 
-    const [shoppingListProducts, setShoppingListProducts] = useState<ShoppingListProductsType[]>([]);        
-    const [allProducts, setAllProducts] = useState<ProductType[]>([]);
-    const [addingProduct, setAddingProduct] = useState<boolean>(false);
-
+    const [showCheckedList, setShowCheckedList] = useState<boolean>(false)
+    const [shoppingListProducts, setShoppingListProducts] = useState<ShoppingListProductsType[]>([]);
+    
     useEffect( () => {
         fetchShoppingListProductsToMemory();        
     }, []);
 
-    useEffect( () => {
-        fetchAwailableProductsToMemory();  
-    }, [shoppingListProducts]);
 
-    //Open/Close adding more products to shopping list
-    const openAddProduct = async() => {
-        if(!addingProduct) {            
-            const productList : ProductType[] = await GetAllProducts();
-            const filteredProducts: ProductType[] = productList.filter(product => !shoppingListProducts.some(b => b.product_id === product.id));            
-            setAllProducts(filteredProducts);
-        }
-        setAddingProduct(!addingProduct);
+
+    const fetchShoppingListProductsToMemory = async() => {
+        const result : ShoppingListProductsType[] = await GetShoppingListProductsByShoppingListId(params.id);
+        setShoppingListProducts(result);
     }
 
-    const fetchShoppingListProductsToMemory = async() => {        
-        const shoppingListProducts : ShoppingListProductsType[] = await GetShoppingListProductsByShoppingListId(params.id);
-        setShoppingListProducts(shoppingListProducts);        
+    const checkProduct = (product: ShoppingListProductsType) => {
+        setShoppingListProducts((products) => 
+        products.map( (item) => item.id === product.id ? {...item, is_checked: !item.is_checked } : item) )
     }
-
-    const fetchAwailableProductsToMemory = () => {        
-        const filteredProducts: ProductType[] = allProducts.filter(product => !shoppingListProducts.some(b => b.product_id === product.id));            
-        setAllProducts(filteredProducts);        
-    }
-
-    //REMOVE
-    const removeProductFromList = async(id : number) => {
-        console.log('remove');
-        await RemoveProductFromShoppingList(id);
-        await fetchShoppingListProductsToMemory();
-    }
-
-    //ADD
-    const addProductToShoppingList = async(id: number) => {
-        await AddNewProductToShoppingList(shoppingListId, id);
-        await fetchShoppingListProductsToMemory();        
-    }
-        
 
     return (
-        <>      
+        <>        
         {
-        shoppingListProducts.length <= 0 && (
-        <>
-            <Box sx={BoxStyle} m={3}> <Typography variant="h4" component="div"> Shopping list is empty. Add products</Typography></Box>
-        </>
-        )
-        }      
-        
-        <Box sx={BoxStyle} m={1}>            
-            <Button 
-                color="primary" 
-                sx={ButtonStyle}
-                onClick={openAddProduct}
-            >
-                {addingProduct ? 'Close' : 'Add more products to list' }                
-            </Button>
-        </Box>
-        
-        {
-        addingProduct ? (
+            <>            
             <Box sx={ {maxWidth: '500px'}}>
-                {
-                allProducts.map((product, index) => {
-                    return (
-                        <div key={index} style={ {margin: '10px'}}>
-                            <ProductListItem icon={IconPropsForAddingProduct} name={product.name} iconAction={() => addProductToShoppingList(product.id)} />
-                        </div>
-                    )
-                })
-                }
-            </Box>
-            ) : (            
-            
-            <Box sx={ {maxWidth: '500px'}}>
-            {            
-                shoppingListProducts.map((product, index) => {
-                    return (
-                        <div key={index} style={ {margin: '10px'}}>
-                            <ProductListItem icon={IconPropsForDeletingProduct} name={product.name} iconAction={() => removeProductFromList(product.id)} />
+            {
+                shoppingListProducts.map((product, index) => (                    
+                        product.is_checked == false &&                    
+                        <div key={index} style={ {margin: '10px'}}>                            
+                            <ProductListItem icon={IconPropsForAddingProduct} name={product.name} iconAction={() => checkProduct(product)} />
+                            {'false'}
                         </div>                    
                     )
-                })
+                )
             }
-            </Box>            
-        )}
+            </Box>
+
+            <Divider />
+            <Button sx={ {} } onClick={() => setShowCheckedList(!showCheckedList)}>
+                {showCheckedList ? 'Hide in Cart' : 'Show in Cart'}
+            </Button>
+        
+            { showCheckedList &&
+            <Box sx={ {maxWidth: '500px'}}>
+            {
+                shoppingListProducts.map((product, index) => (
+                    product.is_checked == true &&
+                 
+                        <div key={index} style={ {margin: '10px'}}>                            
+                            <ProductListItem icon={IconPropsForAddingProduct} name={product.name} iconAction={() => checkProduct(product)} />
+                            {'trueee'}
+                        </div>                 
+                    )                    
+                )
+            }
+            </Box>
+            }
+            </>
+        }
 
         </>
     )

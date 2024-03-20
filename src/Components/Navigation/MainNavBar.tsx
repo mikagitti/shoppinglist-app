@@ -29,10 +29,10 @@ export default function MainNavBar() {
     
     const [drawerOpen, setDrawerOpen] = useState(false);
     const theme = useTheme();
-    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+    const isPhone = useMediaQuery(theme.breakpoints.down('sm'));
 
     const iconStyle = { 
-        fontSize: isSmallScreen ? '25px' : '45px',
+        fontSize: isPhone ? '25px' : '45px',
     }
     
     const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
@@ -78,9 +78,9 @@ export default function MainNavBar() {
 
     return (
         <AppBar position="static">            
-            <Toolbar sx={{ justifyContent: isSmallScreen?'left':'right',  flexDirection: 'row'  }}>
+            <Toolbar sx={{ justifyContent: isPhone?'left':'right',  flexDirection: 'row'  }}>
                 
-                {isSmallScreen ? (
+                {isPhone ? (
                 <>
                  <Box sx={{ flexGrow: 1, display: 'flex', gap: 3, justifyContent: 'left'}}>
                     <IconButton
